@@ -43,3 +43,6 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 
 ## Release Notes
 1.0.0 Initial release with API functionality
+
+## Credits
+Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.
