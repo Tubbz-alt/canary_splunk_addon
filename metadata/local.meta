@@ -15,7 +15,7 @@ modtime = 1520763473.752282000
 
 [ta_canary_settings/additional_parameters]
 version = 7.0.0
-modtime = 1521716273.888449000
+modtime = 1524697105.679405000
 
 [props/source%3A%3A...canary_acknowledge_incident_modalert.log%2A]
 owner = admin
@@ -77,3 +77,8 @@ modtime = 1522544660.274790000
 owner = admin
 version = 7.0.0
 modtime = 1522545724.015559000
+
+[inputs/canary_api%3A%2F%2Fcanary_api]
+owner = admin
+version = 7.0.0
+modtime = 1524697180.640673000

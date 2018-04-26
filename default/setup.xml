@@ -1,0 +1,22 @@
+<setup>
+    <block title="Save Canary Console Credentials" endpoint="admin/conf-ta_canary_settings" entity="additional_parameters">
+      <text>
+        In your Canary Console, click on the "Setup" link and browse to the "API" section. Enable the API option if diabled, and generate an API token if not already present.
+      </text>
+      <input field="canary_domain">
+        <label>Console Host</label>
+        <type>text</type>
+      </input>
+      <text>
+        &lt;i&gt;Your Canary Console hostname. (e.g. XXXXXXXX.canary.tools)&lt;/i&gt;
+      </text>
+
+      <input field="api_key">
+        <label>Console API Auth Token</label>
+        <type>text</type>
+      </input>
+      <text>
+        &lt;i&gt;The API auth token from your Console setting's API section.&lt;/i&gt;
+      </text>
+    </block>
+</setup>

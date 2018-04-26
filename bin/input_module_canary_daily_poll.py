@@ -22,6 +22,11 @@ def validate_input(helper, definition):
 
 def collect_events(helper, ew):
     domain = helper.get_global_setting('canary_domain')
+
+    #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
+    if not domain.endswith('.canary.tools'):
+        domain += '.canary.tools'
+
     api_key = helper.get_global_setting("api_key")
     incident_limit = 20
 
@@ -34,10 +39,10 @@ def collect_events(helper, ew):
         use_proxy = False
 
     #Set a custom useragent header for Splunk API so Canary.tools can measure the use of the product
-    headers = {'User-Agent': 'Splunk API Call'}
+    headers = {'User-Agent': 'Splunk Daily Poller Call'}
 
     #Pass the domain and the api key to the url.
-    url = "https://{}.canary.tools/api/v1/ping?auth_token={}".format(domain,api_key)
+    url = "https://{}/api/v1/ping?auth_token={}".format(domain,api_key)
 
     #Set the method of Get to the console
     method = "GET"
@@ -56,17 +61,17 @@ def collect_events(helper, ew):
 
         #Get current time for testing purposes.
         current_time = time.time()
-        
-        #Collect All unacknowledged incidents from Canary Tools
-        url_unacknowledgedIncidents    = "https://{}.canary.tools/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&limit={}".format(domain,api_key,incident_limit)
 
-        url_cursorIncidents = "https://{}.canary.tools/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&cursor=".format(domain,api_key)
-        
+        #Collect All unacknowledged incidents from Canary Tools
+        url_unacknowledgedIncidents    = "https://{}/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&limit={}".format(domain,api_key,incident_limit)
+
+        url_cursorIncidents = "https://{}/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&cursor=".format(domain,api_key)
+
         #Collect All Registered Devices from Canary Tools
-        url_regDevices = "https://{}.canary.tools/api/v1/devices/all?auth_token={}&tz=UTC".format(domain,api_key)
+        url_regDevices = "https://{}/api/v1/devices/all?auth_token={}&tz=UTC".format(domain,api_key)
 
         #Collect All Canary Tokens from Canary Tools
-        url_canarytokens_fetch = "https://{}.canary.tools/api/v1/canarytokens/fetch?auth_token={}".format(domain,api_key)
+        url_canarytokens_fetch = "https://{}/api/v1/canarytokens/fetch?auth_token={}".format(domain,api_key)
 
         #Issue a new response to the Registered DevicesAPI
         response_regDevices = helper.send_http_request(url_regDevices, method,headers=headers, verify=True, timeout=60, use_proxy=use_proxy)
@@ -118,7 +123,7 @@ def collect_events(helper, ew):
             else:
                 #If no devices have been registered
                 helper.log_info("No devices have been registered. Successful connection to canaryapi")
-        
+
         #If the resposne code from querying the Registered devices is not 200
         else:
             helper.log_error("Error occured with canary.tools API call. Error Message: {}".format(response_regDevices.json()))
@@ -127,7 +132,7 @@ def collect_events(helper, ew):
         if response_canarytokens_fetch.status_code == 200:
             #Output the results to json
             data = response_canarytokens_fetch.json()
-            
+
             if len(data['tokens']) >0:
                 for a in data['tokens']:
                     #Add current time of server to timestamp
@@ -140,11 +145,11 @@ def collect_events(helper, ew):
             else:
                 #If no tokens have been registered
                 helper.log_info("No tokens have been regiestered. Successful connection to canaryapi")
-           
-        
+
+
         else:
             helper.log_error("Error occured with canary.tools API call. Error Message: {}".format(response_canarytokens_fetch.json()))
-        
+
         while response_unacknowledgedIncidents.status_code == 200:
             #If we receive a 200 response from the all incidents API
             #Output the results to json
@@ -169,7 +174,7 @@ def collect_events(helper, ew):
             else:
                 #If no incidents have been logged
                 helper.log_info("No incidents have been logged. Successful connection to canaryapi")
-                
+
             if not data['cursor']['next']:
                 break
 
@@ -177,10 +182,10 @@ def collect_events(helper, ew):
         #If the resposne code from querying the Incidents is not 200
         else:
             helper.log_error("Error occured with canary.tools API call. Error Message: {}".format(response_unacknowledgedIncidents.json()))
-        
+
     else:
         helper.log_error("Error occured with canary.tools device API call. Error Message: {}".format(response.json()))
-    
+
     """Implement your data collection logic here
     # The following examples get the arguments of this input.
     # Note, for single instance mod input, args will be returned as a dict.
