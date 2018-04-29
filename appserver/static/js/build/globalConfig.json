@@ -223,6 +223,44 @@
                 {
                     "entity": [
                         {
+                            "required": true, 
+                            "help": "The first part of your canary domain.  i.e if your canary domain is https://mycanary.canary.tools then this field would be 'mycanary'", 
+                            "field": "canary_domain", 
+                            "defaultValue": "", 
+                            "validators": [
+                                {
+                                    "maxLength": 8192, 
+                                    "minLength": 0, 
+                                    "errorMsg": "Max length of text input is 8192", 
+                                    "type": "string"
+                                }
+                            ], 
+                            "label": "Canary Domain", 
+                            "type": "text"
+                        }, 
+                        {
+                            "required": true, 
+                            "help": "API Key from canary dashboard.", 
+                            "field": "api_key", 
+                            "defaultValue": "", 
+                            "validators": [
+                                {
+                                    "maxLength": 8192, 
+                                    "minLength": 0, 
+                                    "errorMsg": "Max length of text input is 8192", 
+                                    "type": "string"
+                                }
+                            ], 
+                            "label": "API Key", 
+                            "type": "text"
+                        }
+                    ], 
+                    "title": "Add-on Settings", 
+                    "name": "additional_parameters"
+                },
+                {
+                    "entity": [
+                        {
                             "field": "proxy_enabled", 
                             "label": "Enable", 
                             "type": "checkbox"
@@ -352,44 +390,6 @@
                     ], 
                     "title": "Logging", 
                     "name": "logging"
-                }, 
-                {
-                    "entity": [
-                        {
-                            "required": true, 
-                            "help": "The first part of your canary domain.  i.e if your canary domain is https://mycanary.canary.tools then this field would be 'mycanary'", 
-                            "field": "canary_domain", 
-                            "defaultValue": "", 
-                            "validators": [
-                                {
-                                    "maxLength": 8192, 
-                                    "minLength": 0, 
-                                    "errorMsg": "Max length of text input is 8192", 
-                                    "type": "string"
-                                }
-                            ], 
-                            "label": "Canary Domain", 
-                            "type": "text"
-                        }, 
-                        {
-                            "required": true, 
-                            "help": "API Key from canary dashboard.", 
-                            "field": "api_key", 
-                            "defaultValue": "", 
-                            "validators": [
-                                {
-                                    "maxLength": 8192, 
-                                    "minLength": 0, 
-                                    "errorMsg": "Max length of text input is 8192", 
-                                    "type": "string"
-                                }
-                            ], 
-                            "label": "API Key", 
-                            "type": "text"
-                        }
-                    ], 
-                    "title": "Add-on Settings", 
-                    "name": "additional_parameters"
                 }
             ]
         }

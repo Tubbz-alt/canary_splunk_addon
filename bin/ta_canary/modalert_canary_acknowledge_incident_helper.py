@@ -13,6 +13,9 @@ def process_event(helper, *args, **kwargs):
 
     # The following example gets the setup parameters and prints them to the log
     canary_domain = helper.get_global_setting("canary_domain")
+    #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
+    if not canary_domain.endswith('.canary.tools'):
+        canary_domain += '.canary.tools'
     helper.log_info("canary_domain={}".format(canary_domain))
     api_key = helper.get_global_setting("api_key")
     helper.log_info("api_key={}".format(api_key))
@@ -71,6 +74,10 @@ def process_event(helper, *args, **kwargs):
     helper.log_info("Alert action canary_acknowledge_incident started.")
     
     domain = helper.get_global_setting('canary_domain')
+    #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
+    if not domain.endswith('.canary.tools'):
+        domain += '.canary.tools'
+    helper.log_info("canary_domain={}".format(domain))
     api_key = helper.get_global_setting("api_key")
     
     #Check to see if proxy setting is configured
