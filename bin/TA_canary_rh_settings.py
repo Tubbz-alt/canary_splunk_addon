@@ -105,7 +105,7 @@ fields_additional_parameters = [
     field.RestField(
         'api_key',
         required=True,
-        encrypted=False,
+        encrypted=True,
         default='',
         validator=validator.String(
             min_len=0, 
