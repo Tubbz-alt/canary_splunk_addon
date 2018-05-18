@@ -105,7 +105,7 @@ def process_event(helper, *args, **kwargs):
     post_data = "incident={}".format(incident_id)
     
     #Pass the domain and the api key to the url.
-    url = "https://{}.canary.tools/api/v1/incident/acknowledge?auth_token={}".format(domain,api_key)
+    url = "https://{}/api/v1/incident/acknowledge?auth_token={}".format(domain,api_key)
     
     #Set the method of Get to the console
     method = "POST"

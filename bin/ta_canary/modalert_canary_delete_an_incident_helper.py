@@ -101,7 +101,7 @@ def process_event(helper, *args, **kwargs):
     current_time = time.time()
     
     #Pass the domain and the api key to the url.
-    url = "https://{}.canary.tools/api/v1/incident/delete?auth_token={}&incident={}".format(domain,api_key,incident_id)
+    url = "https://{}/api/v1/incident/delete?auth_token={}&incident={}".format(domain,api_key,incident_id)
     
     #Set the method of Get to the console
     method = "DELETE"
