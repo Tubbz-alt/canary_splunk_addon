@@ -33,11 +33,12 @@ def collect_events(helper, ew):
         version = [ i for i in helper.service.apps.list() if i.name == helper.app][0].content['version']
     except:
         version = 'N/A'
-    headers = {'User-Agent': 'Splunk API Call ({})'.format(version)}
+    headers = {'User-Agent': 'Splunk API Call ({})'.format(version),
+               'X-Canary-Auth-Token': api_key}
 
 
     #Pass the domain and the api key to the url.
-    url = "https://{}/api/v1/ping?auth_token={}".format(domain,api_key)
+    url = "https://{}/api/v1/ping".format(domain)
 
     #Set the method of Get to the console
     method = "GET"
@@ -58,15 +59,15 @@ def collect_events(helper, ew):
         current_time = time.time()
 
         #Collect All unacknowledged incidents from Canary Tools
-        url_unacknowledgedIncidents    = "https://{}/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&limit={}".format(domain,api_key,incident_limit)
+        url_unacknowledgedIncidents    = "https://{}/api/v1/incidents/unacknowledged?tz=UTC&limit={}".format(domain,incident_limit)
 
-        url_cursorIncidents = "https://{}/api/v1/incidents/unacknowledged?auth_token={}&tz=UTC&cursor=".format(domain,api_key)
+        url_cursorIncidents = "https://{}/api/v1/incidents/unacknowledged?tz=UTC&cursor=".format(domain)
 
         #Collect All Registered Devices from Canary Tools
-        url_regDevices = "https://{}/api/v1/devices/all?auth_token={}&tz=UTC".format(domain,api_key)
+        url_regDevices = "https://{}/api/v1/devices/all?tz=UTC".format(domain)
 
         #Collect All Canary Tokens from Canary Tools
-        url_canarytokens_fetch = "https://{}/api/v1/canarytokens/fetch?auth_token={}".format(domain,api_key)
+        url_canarytokens_fetch = "https://{}/api/v1/canarytokens/fetch".format(domain)
 
         #Issue a new response to the Registered DevicesAPI
         response_regDevices = helper.send_http_request(url_regDevices, method,headers=headers, verify=True, timeout=60, use_proxy=use_proxy)

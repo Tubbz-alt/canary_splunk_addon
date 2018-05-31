@@ -224,7 +224,7 @@
                     "entity": [
                         {
                             "required": true, 
-                            "help": "The first part of your canary domain.  i.e if your canary domain is https://mycanary.canary.tools then this field would be 'mycanary'", 
+                            "help": "The hostname of your Canary Console. If your Canary Console is at https://bae818968.canary.tools, then this field must contain just 'bae818968.canary.tools'.", 
                             "field": "canary_domain", 
                             "defaultValue": "", 
                             "validators": [
@@ -240,7 +240,7 @@
                         }, 
                         {
                             "required": true, 
-                            "help": "API Key from canary dashboard.", 
+                            "help": "API Key found on the Settings page of your Canary Console.", 
                             "field": "api_key", 
                             "defaultValue": "", 
                             "validators": [
