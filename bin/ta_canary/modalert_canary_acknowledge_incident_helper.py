@@ -89,7 +89,13 @@ def process_event(helper, *args, **kwargs):
         use_proxy = False
     
     #Set a custom useragent header for Splunk API so Canary.tools can see the use of the product
-    headers = {'User-Agent': 'Splunk API Call'}
+    #Include the TA-canary version number
+    try:
+        version = [ i for i in helper.service.apps.list() if i.name == helper.app][0].content['version']
+    except:
+        version = 'N/A'
+    headers = {'User-Agent': 'Splunk API Call ({})'.format(version),
+               'X-Canary-Auth-Token': api_key}
     
     #Get ID of Incident
     incident_id = helper.get_param("incident_id")
@@ -105,7 +111,7 @@ def process_event(helper, *args, **kwargs):
     post_data = "incident={}".format(incident_id)
     
     #Pass the domain and the api key to the url.
-    url = "https://{}/api/v1/incident/acknowledge?auth_token={}".format(domain,api_key)
+    url = "https://{}/api/v1/incident/acknowledge".format(domain)
     
     #Set the method of Get to the console
     method = "POST"

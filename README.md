@@ -45,6 +45,7 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 1.1.3 Early release with API functionality.
 1.1.4 Fixed cursor-based fetching for large result sets.
 1.1.5 Move API token into HTTP header.
+1.1.6 Finished API migration
 
 ## Credits
 Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.
