@@ -6,12 +6,28 @@ from splunktaucclib.rest_handler.endpoint import (
     validator,
     RestModel,
     MultipleModel,
+    converter,
 )
 from splunktaucclib.rest_handler import admin_external, util
 from splunk_aoblib.rest_migration import ConfigMigrationHandler
 
 util.remove_http_proxy_env_vars()
 
+import urllib
+
+class URIEncoder(converter.Converter):
+    # for the http proxy type if there are any special
+    # characters in the username or password these need to be
+    # encoded
+    def encode(self, value, request):
+        if request.get("proxy_type") == 'http':
+            return urllib.quote(value)
+        return value
+
+    def decode(self, value, response):
+        return value
+
+uri_encoder = URIEncoder()
 
 fields_proxy = [
     field.RestField(
@@ -53,6 +69,7 @@ fields_proxy = [
         required=False,
         encrypted=False,
         default=None,
+        converter=uri_encoder,
         validator=validator.String(
             min_len=0, 
             max_len=50, 
@@ -63,6 +80,7 @@ fields_proxy = [
         required=False,
         encrypted=True,
         default=None,
+        converter=uri_encoder,
         validator=validator.String(
             min_len=0, 
             max_len=8192, 
