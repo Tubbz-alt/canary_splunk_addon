@@ -171,7 +171,7 @@ def collect_events(helper, ew):
                 #If no incidents have been logged
                 helper.log_info("No incidents have been logged. Successful connection to canaryapi")
 
-            if not data['cursor']['next_link']:
+            if not data['cursor']['next_link'] or not data['cursor']['next_link'].startwith('https://'):
                 break
 
             response_unacknowledgedIncidents = helper.send_http_request(data['cursor']['next_link'], method,headers=headers, verify=True, timeout=60, use_proxy=use_proxy)
