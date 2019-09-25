@@ -130,7 +130,7 @@ def collect_events(helper, ew):
                 #Add current time of server to timestamp
                 helper.log_info("No incidents have been logged. Successful connection to canaryapi")
 
-            if not data['cursor']['next_link'] or not data['cursor']['next_link'].startwith('https://'):
+            if not data['cursor']['next_link'] or not data['cursor']['next_link'].startswith('https://'):
                 break
 
             response_allIncidents = helper.send_http_request(data['cursor']['next_link'], method,headers=headers, verify=True, timeout=60, use_proxy=use_proxy)
