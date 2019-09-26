@@ -50,6 +50,7 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 1.1.8 Handle special chars in passwords
 1.1.9 Additional checks on returned URLs
 1.1.10 Fix typo
+1.1.11 Rebuild broken package
 
 ## Credits
 Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.
