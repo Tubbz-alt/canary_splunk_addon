@@ -31,7 +31,7 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 
 ### Splunk Installation
 
-1. Install from [Splunkbase](https://splunkbase.splunk.com/app/3980/) (recommended), or git clone this repo ('git clone https://github.com/thinkst/TA-canary')
+1. Install from [Splunkbase](https://splunkbase.splunk.com/app/3980/) (recommended), or git clone this repo ('git clone https://github.com/thinkst/canary_splunk_addon')
 2. Install the add-on to the indexer, heavy forwarder and search head in your Splunk environment
 3. On the Search Head open a browser to to http://yoursplunkserver:8000/en-GB/app/TA-canary/configuration
 4. Enable a proxy if it is required
