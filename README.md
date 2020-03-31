@@ -30,7 +30,8 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 5. Take note of the generated API key.  You will need this.
 
 ### Splunk Installation
-1. Git clone this directory 'git clone https://github.com/secops4thewin/TA-canary'
+
+1. Install from [Splunkbase](https://splunkbase.splunk.com/app/3980/) (recommended), or git clone this repo ('git clone https://github.com/thinkst/TA-canary')
 2. Install the add-on to the indexer, heavy forwarder and search head in your Splunk environment
 3. On the Search Head open a browser to to http://yoursplunkserver:8000/en-GB/app/TA-canary/configuration
 4. Enable a proxy if it is required
@@ -42,15 +43,15 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 
 
 ## Release Notes
-1.1.3 Early release with API functionality.
-1.1.4 Fixed cursor-based fetching for large result sets.
-1.1.5 Move API token into HTTP header.
-1.1.6 Finished API migration
-1.1.7 Fix duplicate values in tabulated view
-1.1.8 Handle special chars in passwords
-1.1.9 Additional checks on returned URLs
-1.1.10 Fix typo
-1.1.11 Rebuild broken package
+- 1.1.3 Early release with API functionality.
+- 1.1.4 Fixed cursor-based fetching for large result sets.
+- 1.1.5 Move API token into HTTP header.
+- 1.1.6 Finished API migration
+- 1.1.7 Fix duplicate values in tabulated view
+- 1.1.8 Handle special chars in passwords
+- 1.1.9 Additional checks on returned URLs
+- 1.1.10 Fix typo
+- 1.1.11 Rebuild broken package
 
 ## Credits
 Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.
