@@ -12,6 +12,7 @@ from solnlib.packages.splunklib import modularinput as smi
 
 
 import input_module_canary_api as input_module
+from io import open
 
 bin_dir = os.path.basename(__file__)
 

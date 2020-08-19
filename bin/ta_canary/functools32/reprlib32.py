@@ -1,13 +1,14 @@
 """Redo the builtin repr() (representation) but with limits on most sizes."""
+from __future__ import absolute_import
 
 __all__ = ["Repr", "repr", "recursive_repr"]
 
-import __builtin__ as builtins
+import six.moves.builtins as builtins
 from itertools import islice
 try:
-    from thread import get_ident
+    from six.moves._thread import get_ident
 except ImportError:
-    from _dummy_thread32 import get_ident
+    from ._dummy_thread32 import get_ident
 
 def recursive_repr(fillvalue='...'):
     'Decorator to make a repr function return fillvalue for a recursive call'

@@ -29,6 +29,8 @@ from abc import ABCMeta, abstractmethod
 from .. import splunk_rest_client as rest_client
 from ..packages.splunklib import binding
 from ..utils import retry
+import six
+from io import open
 
 __all__ = ['CheckpointerException',
            'KVStoreCheckpointer',
@@ -39,11 +41,9 @@ class CheckpointerException(Exception):
     pass
 
 
-class Checkpointer(object):
+class Checkpointer(six.with_metaclass(ABCMeta, object)):
     '''Base class of checkpointer.
     '''
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def update(self, key, state):

@@ -22,8 +22,9 @@ import os
 import signal
 import time
 import traceback
-import urllib2
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 from functools import wraps
+from six.moves import range
 
 __all__ = ['handle_teardown_signals',
            'datetime_to_seconds',
@@ -149,7 +150,7 @@ def retry(retries=3, reraise=True, default_return=None, exceptions=None):
         @wraps(func)
         def wrapper(*args, **kwargs):
             last_ex = None
-            for i in xrange(max_tries):
+            for i in range(max_tries):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:

@@ -14,6 +14,8 @@ from collections import deque
 from threading import Lock
 from jinja2._compat import text_type, string_types, implements_iterator, \
      url_quote
+from io import open
+from six.moves import range
 
 
 _word_split_re = re.compile(r'(\s+)')
@@ -448,15 +450,15 @@ class LRUCache(object):
 
     def iteritems(self):
         """Iterate over all items."""
-        return iter(self.items())
+        return iter(list(self.items()))
 
     def values(self):
         """Return a list of all values."""
-        return [x[1] for x in self.items()]
+        return [x[1] for x in list(self.items())]
 
     def itervalue(self):
         """Iterate over all values."""
-        return iter(self.values())
+        return iter(list(self.values()))
 
     def keys(self):
         """Return a list of all keys ordered by most recent usage."""

@@ -39,6 +39,8 @@ import inspect
 import operator
 import itertools
 import collections
+from six.moves import range
+from six.moves import zip
 
 __version__ = '4.1.2'
 

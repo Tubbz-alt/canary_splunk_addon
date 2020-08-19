@@ -17,6 +17,7 @@ import os
 import re
 import subprocess
 import sys
+from io import open
 
 try:
     from sys import pypy_version_info

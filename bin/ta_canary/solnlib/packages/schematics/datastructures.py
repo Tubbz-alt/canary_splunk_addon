@@ -9,6 +9,7 @@ from operator import eq
 
 from .common import *
 from .util import get_ident
+from six.moves import zip
 
 
 
@@ -131,7 +132,7 @@ class OrderedDict(MutableMapping, dict):
             return (self.__class__, (items,), attrs or None)
         else:
             # Provide items as an iterator. This variant can handle recursive dictionaries.
-            return (self.__class__, (), attrs or None, None, iter(self.items()))
+            return (self.__class__, (), attrs or None, None, iter(list(self.items())))
 
     __reduce__ = __reduce_ex__
 
@@ -225,7 +226,7 @@ class DataObject(object):
         return isinstance(other, DataObject) and self.__dict__ == other.__dict__
 
     def __iter__(self):
-        return iter(self.__dict__.items())
+        return iter(list(self.__dict__.items()))
 
     def _update(self, source=None, **kwargs):
         if isinstance(source, DataObject):
@@ -234,14 +235,14 @@ class DataObject(object):
 
     def _setdefaults(self, source):
         if isinstance(source, dict):
-            source = source.items()
+            source = list(source.items())
         for name, value in source:
             self._setdefault(name, value)
         return self
 
     def _to_dict(self):
         d = dict(self.__dict__)
-        for k, v in d.items():
+        for k, v in list(d.items()):
             if isinstance(v, DataObject):
                 d[k] = v._to_dict()
         return d
@@ -254,8 +255,8 @@ class DataObject(object):
 
     def _clear(self): return self.__dict__.clear()
     def _get(self, *args): return self.__dict__.get(*args)
-    def _items(self): return self.__dict__.items()
-    def _keys(self): return self.__dict__.keys()
+    def _items(self): return list(self.__dict__.items())
+    def _keys(self): return list(self.__dict__.keys())
     def _pop(self, *args): return self.__dict__.pop(*args)
     def _setdefault(self, *args): return self.__dict__.setdefault(*args)
 
@@ -276,7 +277,7 @@ class Context(DataObject):
     def _new(cls, *args, **kwargs):
         if len(args) > len(cls._fields):
             raise TypeError('Too many positional arguments')
-        return cls(zip(cls._fields, args), **kwargs)
+        return cls(list(zip(cls._fields, args)), **kwargs)
 
     @classmethod
     def _make(cls, obj):
@@ -295,7 +296,7 @@ class Context(DataObject):
     def _branch(self, **kwargs):
         if not kwargs:
             return self
-        items = dict(((k, v) for k, v in kwargs.items() if v is not None and v != self[k]))
+        items = dict(((k, v) for k, v in list(kwargs.items()) if v is not None and v != self[k]))
         if items:
             return self.__class__(self, **items)
         else:

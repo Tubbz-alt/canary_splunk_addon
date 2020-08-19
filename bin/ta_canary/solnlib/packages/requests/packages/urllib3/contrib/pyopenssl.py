@@ -44,6 +44,7 @@ Module Variables
 
 '''
 from __future__ import absolute_import
+from six.moves import range
 
 try:
     from ndg.httpsclient.ssl_peer_verification import SUBJ_ALT_NAME_SUPPORT

@@ -1,3 +1,4 @@
+from __future__ import print_function
 # mako/cmd.py
 # Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
 #

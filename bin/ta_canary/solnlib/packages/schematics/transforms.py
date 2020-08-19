@@ -72,7 +72,7 @@ def import_loop(cls, instance_or_dict, field_converter=None, trusted_data=None,
     try:
         context.initialized
     except:
-        if type(field_converter) is types.FunctionType:
+        if isinstance(field_converter, types.FunctionType):
             field_converter = BasicConverter(field_converter)
         context._setdefaults({
             'initialized': True,
@@ -104,7 +104,7 @@ def import_loop(cls, instance_or_dict, field_converter=None, trusted_data=None,
         all_fields = cls._valid_input_keys
         if context.mapping:
             mapped_keys = (set(itertools.chain(*(
-                          listify(input_keys) for target_key, input_keys in context.mapping.items()
+                          listify(input_keys) for target_key, input_keys in list(context.mapping.items())
                           if target_key != 'model_mapping'))))
             all_fields = all_fields | mapped_keys
         if context.strict:
@@ -200,7 +200,7 @@ def export_loop(cls, instance_or_dict, field_converter=None, role=None, raise_er
     try:
         context.initialized
     except:
-        if type(field_converter) is types.FunctionType:
+        if isinstance(field_converter, types.FunctionType):
             field_converter = BasicConverter(field_converter)
         context._setdefaults({
             'initialized': True,
@@ -282,7 +282,7 @@ def atoms(cls, instance_or_dict):
         pass
 
     sequences = ((cls._field_list, field_getter),
-                 (cls._serializables.items(), serializable_getter))
+                 (list(cls._serializables.items()), serializable_getter))
     for sequence, get in sequences:
         for field_name, field in sequence:
             yield (field_name, field, get(field_name, Undefined))

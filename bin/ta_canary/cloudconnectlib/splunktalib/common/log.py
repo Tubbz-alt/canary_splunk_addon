@@ -111,7 +111,7 @@ class Logs(object):
                 logger.setLevel(level)
         else:
             self._default_level = level
-            for logger in self._loggers.itervalues():
+            for logger in self._loggers.values():
                 logger.setLevel(level)
 
     def _get_log_name(self, name):

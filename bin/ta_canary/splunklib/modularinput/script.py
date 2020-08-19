@@ -13,13 +13,14 @@
 # under the License.
 
 from abc import ABCMeta, abstractmethod
-from urlparse import urlsplit
+from six.moves.urllib.parse import urlsplit
 import sys
 
 from ..client import Service
 from .event_writer import EventWriter
 from .input_definition import InputDefinition
 from .validation_definition import ValidationDefinition
+import six
 
 try:
     import xml.etree.cElementTree as ET
@@ -27,7 +28,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 
-class Script(object):
+class Script(six.with_metaclass(ABCMeta, object)):
     """An abstract base class for implementing modular inputs.
 
     Subclasses should override ``get_scheme``, ``stream_events``,
@@ -37,7 +38,6 @@ class Script(object):
     The ``run`` function is used to run modular inputs; it typically should
     not be overridden.
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self):
         self._input_definition = None

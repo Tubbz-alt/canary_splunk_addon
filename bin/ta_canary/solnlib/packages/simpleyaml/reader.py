@@ -20,6 +20,7 @@ __all__ = ['Reader', 'ReaderError']
 from .error import YAMLError, Mark
 
 import codecs, re
+import six
 
 class ReaderError(YAMLError):
 
@@ -69,7 +70,7 @@ class Reader(object):
         self.index = 0
         self.line = 0
         self.column = 0
-        if isinstance(stream, unicode):
+        if isinstance(stream, six.text_type):
             self.name = "<unicode string>"
             self.check_printable(stream)
             self.buffer = stream+u'\0'
@@ -122,7 +123,7 @@ class Reader(object):
     def determine_encoding(self):
         while not self.eof and len(self.raw_buffer) < 2:
             self.update_raw()
-        if not isinstance(self.raw_buffer, unicode):
+        if not isinstance(self.raw_buffer, six.text_type):
             if self.raw_buffer.startswith(codecs.BOM_UTF16_LE):
                 self.raw_decode = codecs.utf_16_le_decode
                 self.encoding = 'utf-16-le'
@@ -155,7 +156,7 @@ class Reader(object):
                 try:
                     data, converted = self.raw_decode(self.raw_buffer,
                             'strict', self.eof)
-                except UnicodeDecodeError, exc:
+                except UnicodeDecodeError as exc:
                     character = exc.object[exc.start]
                     if self.stream is not None:
                         position = self.stream_pointer-len(self.raw_buffer)+exc.start

@@ -19,8 +19,9 @@ This module provides a base class of Splunk modular input.
 import logging
 import sys
 import traceback
-import urllib2
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 from abc import ABCMeta, abstractmethod
+import six
 
 try:
     import xml.etree.cElementTree as ET
@@ -46,7 +47,7 @@ class ModularInputException(Exception):
     pass
 
 
-class ModularInput(object):
+class ModularInput(six.with_metaclass(ABCMeta, object)):
     '''Base class of Splunk modular input.
 
     It's a base modular input, it should be inherited by sub modular input. For
@@ -86,8 +87,6 @@ class ModularInput(object):
        >>>     md = TestModularInput()
        >>>     md.execute()
     '''
-
-    __metaclass__ = ABCMeta
 
     # App name, must be overriden
     app = None
@@ -424,7 +423,7 @@ class ModularInput(object):
                 if self.use_single_instance:
                     self.config_name = self.name
                 else:
-                    self.config_name = input_definition['inputs'].keys()[0]
+                    self.config_name = list(input_definition['inputs'].keys())[0]
                 self.do_run(input_definition['inputs'])
                 logging.info('Modular input: %s exit normally.', self.name)
                 return 0

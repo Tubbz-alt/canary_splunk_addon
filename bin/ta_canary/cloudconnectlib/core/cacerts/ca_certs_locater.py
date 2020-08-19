@@ -10,6 +10,7 @@ import os
 import os.path as op
 import ssl
 import sys
+from io import open
 
 TEMP_CERT_FILE_NAME = 'httplib2_merged_certificates_{}.crt'
 LINUX_CERT_PATH_1 = '/etc/pki/tls/certs/ca-bundle.crt'  # RedHat
@@ -62,7 +63,7 @@ def _fallback():
 def _read_platform_pem_cert_file():
     if sys.platform.startswith('linux'):
         pem_files = [_read_pem_file(LINUX_CERT_PATH_1), _read_pem_file(LINUX_CERT_PATH_2)]
-        return '\n'.join(filter(None, pem_files))
+        return '\n'.join([_f for _f in pem_files if _f])
     elif sys.platform.startswith('darwin'):
         return _read_pem_file(DARWIN_CERT_PATH)
     else:

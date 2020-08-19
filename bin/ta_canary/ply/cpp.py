@@ -8,12 +8,16 @@
 # This module implements an ANSI-C style lexical preprocessor for PLY. 
 # -----------------------------------------------------------------------------
 from __future__ import generators
+from __future__ import print_function
 
 import sys
+from io import open
+import six
+from six.moves import range
 
 # Some Python 3 compatibility shims
 if sys.version_info.major < 3:
-    STRING_TYPES = (str, unicode)
+    STRING_TYPES = (str, six.text_type)
 else:
     STRING_TYPES = str
     xrange = range
@@ -281,7 +285,7 @@ class Preprocessor(object):
     def group_lines(self,input):
         lex = self.lexer.clone()
         lines = [x.rstrip() for x in input.splitlines()]
-        for i in xrange(len(lines)):
+        for i in range(len(lines)):
             j = i+1
             while lines[i].endswith('\\') and (j < len(lines)):
                 lines[i] = lines[i][:-1]+lines[j]
@@ -904,7 +908,7 @@ if __name__ == '__main__':
     while True:
         tok = p.token()
         if not tok: break
-        print(p.source, tok)
+        print((p.source, tok))
 
 
 

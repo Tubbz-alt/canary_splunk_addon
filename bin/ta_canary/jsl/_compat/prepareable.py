@@ -33,7 +33,7 @@ class Prepareable(type):
                     return constructor(cls, name, bases, attributes)
 
                 by_appearance = sorted(
-                    attributes.items(), key=lambda item: get_index(item[0])
+                    list(attributes.items()), key=lambda item: get_index(item[0])
                 )
                 for key, value in by_appearance:
                     namespace[key] = value

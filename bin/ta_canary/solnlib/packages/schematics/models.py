@@ -167,13 +167,13 @@ class ModelMeta(type):
                 base._subclasses.append(klass)
 
         # Finalize fields
-        for field_name, field in fields.items():
+        for field_name, field in list(fields.items()):
             field._setup(field_name, klass)
-        for field_name, field in serializables.items():
+        for field_name, field in list(serializables.items()):
             field._setup(field_name, klass)
 
         klass._valid_input_keys = (
-            set(itertools.chain(*(field.get_input_keys() for field in fields.values())))
+            set(itertools.chain(*(field.get_input_keys() for field in list(fields.values()))))
           | set(serializables))
 
         return klass
@@ -339,7 +339,7 @@ class Model(object):
         context._setdefault('memo', set())
         context.memo.add(cls)
         values = {}
-        for name, field in cls.fields.items():
+        for name, field in list(cls.fields.items()):
             if name in overrides:
                 continue
             if getattr(field, 'model_class', None) in context.memo:
@@ -379,7 +379,7 @@ class Model(object):
     def __eq__(self, other, memo=set()):
         if self is other:
             return True
-        if type(self) is not type(other):
+        if not isinstance(self, type(other)):
             return NotImplemented
         key = (id(self), id(other), get_ident())
         if key in memo:

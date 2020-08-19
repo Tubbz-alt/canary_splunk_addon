@@ -7,7 +7,8 @@ from .nodes import *
 
 import datetime
 
-import sys, copy_reg, types
+import sys, six.moves.copyreg, types
+import six
 
 class RepresenterError(YAMLError):
     pass
@@ -51,7 +52,7 @@ class BaseRepresenter(object):
             #self.represented_objects[alias_key] = None
             self.object_keeper.append(data)
         data_types = type(data).__mro__
-        if type(data) is types.InstanceType:
+        if isinstance(data, types.InstanceType):
             data_types = self.get_classobj_bases(data.__class__)+list(data_types)
         if data_types[0] in self.yaml_representers:
             node = self.yaml_representers[data_types[0]](self, data)
@@ -66,7 +67,7 @@ class BaseRepresenter(object):
                 elif None in self.yaml_representers:
                     node = self.yaml_representers[None](self, data)
                 else:
-                    node = ScalarNode(None, unicode(data))
+                    node = ScalarNode(None, six.text_type(data))
         #if alias_key is not None:
         #    self.represented_objects[alias_key] = node
         return node
@@ -116,8 +117,7 @@ class BaseRepresenter(object):
             self.represented_objects[self.alias_key] = node
         best_style = True
         if hasattr(mapping, 'items'):
-            mapping = mapping.items()
-            mapping.sort()
+            mapping = sorted(list(mapping.items()))
         for item_key, item_value in mapping:
             node_key = self.represent_data(item_key)
             node_value = self.represent_data(item_value)
@@ -141,7 +141,7 @@ class SafeRepresenter(BaseRepresenter):
     def ignore_aliases(self, data):
         if data in [None, ()]:
             return True
-        if isinstance(data, (str, unicode, bool, int, float)):
+        if isinstance(data, (str, six.text_type, bool, int, float)):
             return True
 
     def represent_none(self, data):
@@ -152,11 +152,11 @@ class SafeRepresenter(BaseRepresenter):
         tag = None
         style = None
         try:
-            data = unicode(data, 'ascii')
+            data = six.text_type(data, 'ascii')
             tag = u'tag:yaml.org,2002:str'
         except UnicodeDecodeError:
             try:
-                data = unicode(data, 'utf-8')
+                data = six.text_type(data, 'utf-8')
                 tag = u'tag:yaml.org,2002:str'
             except UnicodeDecodeError:
                 data = data.encode('base64')
@@ -175,10 +175,10 @@ class SafeRepresenter(BaseRepresenter):
         return self.represent_scalar(u'tag:yaml.org,2002:bool', value)
 
     def represent_int(self, data):
-        return self.represent_scalar(u'tag:yaml.org,2002:int', unicode(data))
+        return self.represent_scalar(u'tag:yaml.org,2002:int', six.text_type(data))
 
     def represent_long(self, data):
-        return self.represent_scalar(u'tag:yaml.org,2002:int', unicode(data))
+        return self.represent_scalar(u'tag:yaml.org,2002:int', six.text_type(data))
 
     inf_value = 1e300
     while repr(inf_value) != repr(inf_value*inf_value):
@@ -192,7 +192,7 @@ class SafeRepresenter(BaseRepresenter):
         elif data == -self.inf_value:
             value = u'-.inf'
         else:
-            value = unicode(repr(data)).lower()
+            value = six.text_type(repr(data)).lower()
             # Note that in some cases `repr(data)` represents a float number
             # without the decimal parts.  For instance:
             #   >>> repr(1e17)
@@ -229,11 +229,11 @@ class SafeRepresenter(BaseRepresenter):
         return self.represent_mapping(u'tag:yaml.org,2002:set', value)
 
     def represent_date(self, data):
-        value = unicode(data.isoformat())
+        value = six.text_type(data.isoformat())
         return self.represent_scalar(u'tag:yaml.org,2002:timestamp', value)
 
     def represent_datetime(self, data):
-        value = unicode(data.isoformat(' '))
+        value = six.text_type(data.isoformat(' '))
         return self.represent_scalar(u'tag:yaml.org,2002:timestamp', value)
 
     def represent_yaml_object(self, tag, data, cls, flow_style=None):
@@ -252,7 +252,7 @@ SafeRepresenter.add_representer(type(None),
 SafeRepresenter.add_representer(str,
         SafeRepresenter.represent_str)
 
-SafeRepresenter.add_representer(unicode,
+SafeRepresenter.add_representer(six.text_type,
         SafeRepresenter.represent_unicode)
 
 SafeRepresenter.add_representer(bool,
@@ -294,11 +294,11 @@ class Representer(SafeRepresenter):
         tag = None
         style = None
         try:
-            data = unicode(data, 'ascii')
+            data = six.text_type(data, 'ascii')
             tag = u'tag:yaml.org,2002:str'
         except UnicodeDecodeError:
             try:
-                data = unicode(data, 'utf-8')
+                data = six.text_type(data, 'utf-8')
                 tag = u'tag:yaml.org,2002:python/str'
             except UnicodeDecodeError:
                 data = data.encode('base64')
@@ -319,7 +319,7 @@ class Representer(SafeRepresenter):
         tag = u'tag:yaml.org,2002:int'
         if int(data) is not data:
             tag = u'tag:yaml.org,2002:python/long'
-        return self.represent_scalar(tag, unicode(data))
+        return self.represent_scalar(tag, six.text_type(data))
 
     def represent_complex(self, data):
         if data.imag == 0.0:
@@ -402,8 +402,8 @@ class Representer(SafeRepresenter):
         # !!python/object/apply node.
 
         cls = type(data)
-        if cls in copy_reg.dispatch_table:
-            reduce = copy_reg.dispatch_table[cls](data)
+        if cls in six.moves.copyreg.dispatch_table:
+            reduce = six.moves.copyreg.dispatch_table[cls](data)
         elif hasattr(data, '__reduce_ex__'):
             reduce = data.__reduce_ex__(2)
         elif hasattr(data, '__reduce__'):
@@ -449,7 +449,7 @@ class Representer(SafeRepresenter):
 Representer.add_representer(str,
         Representer.represent_str)
 
-Representer.add_representer(unicode,
+Representer.add_representer(six.text_type,
         Representer.represent_unicode)
 
 Representer.add_representer(long,
@@ -464,7 +464,7 @@ Representer.add_representer(tuple,
 Representer.add_representer(type,
         Representer.represent_name)
 
-Representer.add_representer(types.ClassType,
+Representer.add_representer(type,
         Representer.represent_name)
 
 Representer.add_representer(types.FunctionType,

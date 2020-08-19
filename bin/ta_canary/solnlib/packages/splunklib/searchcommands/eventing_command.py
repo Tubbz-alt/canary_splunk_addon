@@ -16,10 +16,11 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from itertools import imap
+
 
 from .decorators import ConfigurationSetting
 from .search_command import SearchCommand
+from six.moves import map
 
 
 class EventingCommand(SearchCommand):
@@ -137,6 +138,6 @@ class EventingCommand(SearchCommand):
 
         def iteritems(self):
             iteritems = SearchCommand.ConfigurationSettings.iteritems(self)
-            return imap(lambda (name, value): (name, 'events' if name == 'type' else value), iteritems)
+            return map(lambda name_value: (name_value[0], 'events' if name_value[0] == 'type' else name_value[1]), iteritems)
 
         # endregion

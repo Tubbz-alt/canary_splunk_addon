@@ -31,6 +31,7 @@ as follows:::
         print(item)
     print "Results are a preview: %s" % reader.is_preview
 """
+import six
 
 try:
     import xml.etree.cElementTree as et
@@ -202,7 +203,7 @@ class ResultsReader(object):
         return self
 
     def next(self):
-        return self._gen.next()
+        return next(self._gen)
 
     def _parse_results(self, stream):
         """Parse results and messages out of *stream*."""
@@ -254,7 +255,7 @@ class ResultsReader(object):
 
                         def __itertext(self):
                           tag = self.tag
-                          if not isinstance(tag, basestring) and tag is not None:
+                          if not isinstance(tag, six.string_types) and tag is not None:
                               return
                           if self.text:
                               yield self.text

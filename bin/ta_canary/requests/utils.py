@@ -25,11 +25,13 @@ from ._internal_utils import to_native_string
 from .compat import parse_http_list as _parse_list_header
 from .compat import (
     quote, urlparse, bytes, str, OrderedDict, unquote, getproxies,
-    proxy_bypass, urlunparse, basestring, integer_types)
+    proxy_bypass, urlunparse, six.string_types, integer_types)
 from .cookies import RequestsCookieJar, cookiejar_from_dict
 from .structures import CaseInsensitiveDict
 from .exceptions import (
     InvalidURL, InvalidHeader, FileModeWarning, UnrewindableBodyError)
+import six
+from six.moves import range
 
 _hush_pyflakes = (RequestsCookieJar,)
 
@@ -42,7 +44,7 @@ def dict_to_sequence(d):
     """Returns an internal sequence dictionary update."""
 
     if hasattr(d, 'items'):
-        d = d.items()
+        d = list(d.items())
 
     return d
 
@@ -160,7 +162,7 @@ def get_netrc_auth(url, raise_errors=False):
 def guess_filename(obj):
     """Tries to guess the filename of the given object."""
     name = getattr(obj, 'name', None)
-    if (name and isinstance(name, basestring) and name[0] != '<' and
+    if (name and isinstance(name, six.string_types) and name[0] != '<' and
             name[-1] != '>'):
         return os.path.basename(name)
 
@@ -212,7 +214,7 @@ def to_key_val_list(value):
         raise ValueError('cannot encode objects that are not 2-tuples')
 
     if isinstance(value, collections.Mapping):
-        value = value.items()
+        value = list(value.items())
 
     return list(value)
 

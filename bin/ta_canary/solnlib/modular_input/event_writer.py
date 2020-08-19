@@ -31,16 +31,16 @@ from ..hec_config import HECConfig
 from ..packages.splunklib import binding
 from ..splunkenv import get_splunkd_access_info
 from ..utils import retry
+import six
+from six.moves import range
 
 __all__ = ['ClassicEventWriter',
            'HECEventWriter']
 
 
-class EventWriter(object):
+class EventWriter(six.with_metaclass(ABCMeta, object)):
     '''Base class of event writer.
     '''
-
-    __metaclass__ = ABCMeta
 
     description = 'EventWriter'
 
@@ -346,7 +346,7 @@ class HECEventWriter(EventWriter):
 
         last_ex = None
         for event in HECEvent.format_events(events):
-            for i in xrange(self.WRITE_EVENT_RETRIES):
+            for i in range(self.WRITE_EVENT_RETRIES):
                 try:
                     self._rest_client.post(
                         self.HTTP_EVENT_COLLECTOR_ENDPOINT, body=event,

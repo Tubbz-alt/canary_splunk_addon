@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import re
 import json
 from inspect import isfunction
+import six
 
 
 __all__ = [
@@ -329,7 +330,7 @@ class String(Validator):
         def check(val):
             if val is None:
                 return True
-            return isinstance(val, (int, long)) and val >= 0
+            return isinstance(val, six.integer_types) and val >= 0
 
         assert check(min_len) and check(max_len), \
             '%(min_len)s & %(max_len)s should be numbers' % {
@@ -341,7 +342,7 @@ class String(Validator):
         self._min_len, self._max_len = min_len, max_len
 
     def validate(self, value, data):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             self.put_msg('Input value should be string')
             return False
 
@@ -385,7 +386,7 @@ class Datetime(Validator):
         import datetime
         try:
             datetime.datetime.strptime(value, self._format)
-        except ValueError, exc:
+        except ValueError as exc:
             error = 'Wrong datetime with format "%s": %s' % (self._format, str(exc))
             self.put_msg(error)
             return False

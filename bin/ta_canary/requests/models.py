@@ -37,9 +37,10 @@ from .utils import (
     iter_slices, guess_json_utf, super_len, check_header_validity)
 from .compat import (
     cookielib, urlunparse, urlsplit, urlencode, str, bytes, StringIO,
-    is_py2, chardet, builtin_str, basestring)
+    is_py2, chardet, builtin_str, six.string_types)
 from .compat import json as complexjson
 from .status_codes import codes
+import six
 
 #: The set of HTTP status codes that indicate an automatically
 #: processable redirect.
@@ -94,7 +95,7 @@ class RequestEncodingMixin(object):
         elif hasattr(data, '__iter__'):
             result = []
             for k, vs in to_key_val_list(data):
-                if isinstance(vs, basestring) or not hasattr(vs, '__iter__'):
+                if isinstance(vs, six.string_types) or not hasattr(vs, '__iter__'):
                     vs = [vs]
                 for v in vs:
                     if v is not None:
@@ -117,7 +118,7 @@ class RequestEncodingMixin(object):
         """
         if (not files):
             raise ValueError("Files must be provided.")
-        elif isinstance(data, basestring):
+        elif isinstance(data, six.string_types):
             raise ValueError("Data must not be a string.")
 
         new_fields = []
@@ -125,7 +126,7 @@ class RequestEncodingMixin(object):
         files = to_key_val_list(files or {})
 
         for field, val in fields:
-            if isinstance(val, basestring) or not hasattr(val, '__iter__'):
+            if isinstance(val, six.string_types) or not hasattr(val, '__iter__'):
                 val = [val]
             for v in val:
                 if v is not None:
@@ -341,7 +342,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         if isinstance(url, bytes):
             url = url.decode('utf8')
         else:
-            url = unicode(url) if is_py2 else str(url)
+            url = six.text_type(url) if is_py2 else str(url)
 
         # Remove leading whitespaces from url
         url = url.lstrip()
@@ -422,7 +423,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
         self.headers = CaseInsensitiveDict()
         if headers:
-            for header in headers.items():
+            for header in list(headers.items()):
                 # Raise exception on invalid header value.
                 check_header_validity(header)
                 name, value = header
@@ -448,7 +449,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
         is_stream = all([
             hasattr(data, '__iter__'),
-            not isinstance(data, (basestring, list, tuple, collections.Mapping))
+            not isinstance(data, (six.string_types, list, tuple, collections.Mapping))
         ])
 
         try:
@@ -484,7 +485,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             else:
                 if data:
                     body = self._encode_params(data)
-                    if isinstance(data, basestring) or hasattr(data, 'read'):
+                    if isinstance(data, six.string_types) or hasattr(data, 'read'):
                         content_type = None
                     else:
                         content_type = 'application/x-www-form-urlencoded'
@@ -632,7 +633,7 @@ class Response(object):
         )
 
     def __setstate__(self, state):
-        for name, value in state.items():
+        for name, value in list(state.items()):
             setattr(self, name, value)
 
         # pickled objects do not have .raw

@@ -9,9 +9,9 @@ from .compat import *
 
 if PY2:
     try:
-        from thread import get_ident
+        from six.moves._thread import get_ident
     except ImportError:
-        from dummy_thread import get_ident
+        from six.moves._dummy_thread import get_ident
 else:
     try:
         from _thread import get_ident
@@ -65,7 +65,7 @@ def listify(value):
 def module_exports(module_name):
     module_globals = sys.modules[module_name].__dict__
     return [
-        name for name, obj in module_globals.items()
+        name for name, obj in list(module_globals.items())
         if name[0] != '_'
           and (getattr(obj, '__module__', None) == module_name
                 or isinstance(obj, Constant))
@@ -75,7 +75,7 @@ def module_exports(module_name):
 def package_exports(package_name):
     package_globals = sys.modules[package_name].__dict__
     return [
-        name for name, obj in package_globals.items()
+        name for name, obj in list(package_globals.items())
         if name[0] != '_'
           and (getattr(obj, '__module__', '').startswith(package_name + '.')
                 or isinstance(obj, Constant))

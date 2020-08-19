@@ -19,6 +19,7 @@ Orphan process monitor.
 import os
 import threading
 import time
+from six.moves import range
 
 __all__ = ['OrphanProcessChecker',
            'OrphanProcessMonitor']
@@ -116,7 +117,7 @@ class OrphanProcessMonitor(object):
             if self._checker.check_orphan():
                 break
 
-            for _ in xrange(self._interval):
+            for _ in range(self._interval):
                 if not self._started:
                     break
                 time.sleep(1)

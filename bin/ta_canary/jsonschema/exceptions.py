@@ -5,6 +5,7 @@ import textwrap
 
 from jsonschema import _utils
 from jsonschema.compat import PY3, iteritems
+import six
 
 
 WEAK_MATCHES = frozenset(["anyOf", "oneOf"])
@@ -57,7 +58,7 @@ class _Error(Exception):
         return "<%s: %r>" % (self.__class__.__name__, self.message)
 
     def __str__(self):
-        return unicode(self).encode("utf-8")
+        return six.text_type(self).encode("utf-8")
 
     def __unicode__(self):
         essential_for_verbose = (
@@ -143,7 +144,7 @@ class UnknownType(Exception):
         self.schema = schema
 
     def __str__(self):
-        return unicode(self).encode("utf-8")
+        return six.text_type(self).encode("utf-8")
 
     def __unicode__(self):
         pschema = pprint.pformat(self.schema, width=72)

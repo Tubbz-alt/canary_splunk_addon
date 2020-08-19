@@ -101,6 +101,8 @@ import tempfile
 
 from . import splunk_rest_client as rest
 from .packages import simpleyaml as yaml
+from io import open
+from six.moves import zip
 
 __all__ = ['api',
            'api_model',
@@ -133,7 +135,7 @@ def api_model(is_model_class_used, req=None, ref=None, obj=None):
         if not spec.paths:
             return cls
         if is_model_class_used:
-            params = vars(cls).items()
+            params = list(vars(cls).items())
             definition = {}
             # FixMe: (later) No need to replace.
             name = cls.__name__.replace("Model", "")
@@ -352,7 +354,7 @@ def api():
                     'api',
                     'id',
                     'action']
-                path_params = dict(zip(path_keys, args[2]['path'].split('/')))
+                path_params = dict(list(zip(path_keys, args[2]['path'].split('/'))))
                 app = path_params.get('app')
                 version = path_params.get('version')
                 api_name = path_params.get('api')
@@ -537,8 +539,8 @@ class _SwaggerApi(object):
         :return: api path
         :rtype: ```basestring```
         '''
-        if self.paths and self.paths.keys() and len(self.paths.keys()) > 0:
-            return self.paths.keys()[0]
+        if self.paths and list(self.paths.keys()) and len(list(self.paths.keys())) > 0:
+            return list(self.paths.keys())[0]
 
     def set_title(self, title):
         '''

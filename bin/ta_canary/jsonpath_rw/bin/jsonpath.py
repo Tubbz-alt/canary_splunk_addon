@@ -16,6 +16,7 @@ import argparse
 
 # JsonPath-RW imports
 from jsonpath_rw import parse
+from io import open
 
 def find_matches_for_file(expr, f):
     return expr.find(json.load(f))

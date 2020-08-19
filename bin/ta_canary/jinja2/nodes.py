@@ -137,7 +137,7 @@ class Node(with_metaclass(NodeType, object)):
                     len(self.fields),
                     len(self.fields) != 1 and 's' or ''
                 ))
-            for name, arg in izip(self.fields, fields):
+            for name, arg in zip(self.fields, fields):
                 setattr(self, name, arg)
         for attr in self.attributes:
             setattr(self, attr, attributes.pop(attr, None))
@@ -226,7 +226,7 @@ class Node(with_metaclass(NodeType, object)):
         return self
 
     def __eq__(self, other):
-        return type(self) is type(other) and \
+        return isinstance(self, type(other)) and \
                tuple(self.iter_fields()) == tuple(other.iter_fields())
 
     def __ne__(self, other):

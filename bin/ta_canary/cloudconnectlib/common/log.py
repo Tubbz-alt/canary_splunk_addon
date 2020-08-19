@@ -2,11 +2,10 @@ import logging
 
 from solnlib.pattern import Singleton
 from ..splunktacollectorlib.common import log as stulog
+import six
 
 
-class CloudClientLogAdapter(logging.LoggerAdapter):
-    __metaclass__ = Singleton
-
+class CloudClientLogAdapter(six.with_metaclass(Singleton, logging.LoggerAdapter)):
     def __init__(self, logger=None, extra=None, prefix=""):
         super(CloudClientLogAdapter, self).__init__(logger, extra)
         self.cc_prefix = prefix if prefix else ""

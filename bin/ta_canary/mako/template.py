@@ -17,6 +17,7 @@ import sys
 import tempfile
 import types
 import weakref
+from six.moves import range
 
 
 class Template(object):
@@ -620,7 +621,7 @@ class ModuleInfo(object):
         source_map = compat.json.loads(source_map)
         source_map['line_map'] = dict(
             (int(k), int(v))
-            for k, v in source_map['line_map'].items())
+            for k, v in list(source_map['line_map'].items()))
         if full_line_map:
             f_line_map = source_map['full_line_map'] = []
             line_map = source_map['line_map']
@@ -719,7 +720,7 @@ def _get_module_info_from_callable(callable_):
     if compat.py3k:
         return _get_module_info(callable_.__globals__['__name__'])
     else:
-        return _get_module_info(callable_.func_globals['__name__'])
+        return _get_module_info(callable_.__globals__['__name__'])
 
 
 def _get_module_info(filename):

@@ -7,6 +7,7 @@ from binascii import hexlify, unhexlify
 from hashlib import md5, sha1, sha256
 
 from ..exceptions import SSLError, InsecurePlatformWarning, SNIMissingWarning
+from six.moves import zip
 
 
 SSLContext = None

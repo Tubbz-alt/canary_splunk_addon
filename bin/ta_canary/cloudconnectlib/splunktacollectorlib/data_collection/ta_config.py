@@ -1,12 +1,14 @@
+from __future__ import absolute_import
 import os.path as op
 import socket
 
-import ta_consts as c
-import ta_helper as th
+from . import ta_consts as c
+from . import ta_helper as th
 from ..common import log as stulog
 from ...splunktalib import modinput as modinput
 from ...splunktalib import splunk_cluster as sc
 from ...splunktalib.common import util
+import os
 
 
 # methods can be overrided by subclass : process_task_configs

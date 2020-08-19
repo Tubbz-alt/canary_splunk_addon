@@ -16,6 +16,7 @@ from types import TracebackType, CodeType
 from jinja2.utils import missing, internal_code
 from jinja2.exceptions import TemplateSyntaxError
 from jinja2._compat import iteritems, reraise, PY2
+from six.moves import range
 
 # on pypy we can take advantage of transparent proxies
 try:
@@ -124,7 +125,7 @@ class ProcessedTraceback(object):
         tb = self.frames[0]
         # the frame will be an actual traceback (or transparent proxy) if
         # we are on pypy or a python implementation with support for tproxy
-        if type(tb) is not TracebackType:
+        if not isinstance(tb, TracebackType):
             tb = tb.tb
         return self.exc_type, self.exc_value, tb
 

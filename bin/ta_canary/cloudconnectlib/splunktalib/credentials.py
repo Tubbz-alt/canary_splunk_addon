@@ -8,6 +8,7 @@ import xml.dom.minidom as xdm
 from . import rest
 from .common import util
 from .common import xml_dom_parser as xdp
+from six.moves import range
 
 # Splunk can only encrypt string when length <=255
 SPLUNK_CRED_LEN_LIMIT = 255
@@ -103,9 +104,9 @@ class CredentialManager(object):
         :return: raise on failure
         """
 
-        for name, encr_dict in stanza.items():
+        for name, encr_dict in list(stanza.items()):
             encrypts = []
-            for key, val in encr_dict.items():
+            for key, val in list(encr_dict.items()):
                 encrypts.append(key)
                 encrypts.append(val)
             self._update(name, self._sep.join(encrypts))
@@ -233,7 +234,7 @@ class CredentialManager(object):
                 results[name] = stanza
 
         # merge the stanzas by index
-        for name, stanza in results.items():
+        for name, stanza in list(results.items()):
             field_clear = stanza.get('clears')
             field_encr = stanza.get('encrs')
             if isinstance(field_clear, dict):
@@ -247,7 +248,7 @@ class CredentialManager(object):
 
                 del stanza['clears']
                 del stanza['encrs']
-        return results.values()
+        return list(results.values())
 
     def _get_all_passwords(self):
         """

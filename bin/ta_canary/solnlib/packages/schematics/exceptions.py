@@ -52,7 +52,7 @@ class FieldError(BaseError, Sequence):
 
     def __init__(self, *args, **kwargs):
 
-        if type(self) is FieldError:
+        if isinstance(self, FieldError):
             raise NotImplementedError("Please raise either ConversionError or ValidationError.")
         if len(args) == 0:
             raise TypeError("Please provide at least one error or error message.")
@@ -85,7 +85,7 @@ class FieldError(BaseError, Sequence):
         super(FieldError, self).__init__(self.messages)
 
     def __eq__(self, other):
-        if type(other) is type(self):
+        if isinstance(other, type(self)):
             return other.messages == self.messages
         elif isinstance(other, list):
             return other == self.messages
@@ -139,7 +139,7 @@ class CompoundError(BaseError):
         if not isinstance(errors, dict):
             raise TypeError("Compound errors must be reported as a dictionary.")
         self.errors = {}
-        for key, value in errors.items():
+        for key, value in list(errors.items()):
             if isinstance(value, CompoundError):
                 self.errors[key] = value.errors
             else:

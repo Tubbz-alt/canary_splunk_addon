@@ -15,6 +15,7 @@ from ..transforms import (
     to_native_converter, to_primitive_converter)
 
 from .base import BaseType, get_value_in
+from six.moves import range
 
 
 class CompoundType(BaseType):

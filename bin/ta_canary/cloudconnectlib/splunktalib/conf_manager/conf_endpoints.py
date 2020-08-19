@@ -1,6 +1,7 @@
 from .request import content_request
 from ..common import util
 from ..common import xml_dom_parser as xdp
+import six
 
 CONF_ENDPOINT = "%s/servicesNS/%s/%s/configs/conf-%s"
 
@@ -43,7 +44,7 @@ def create_stanza(splunkd_uri, session_key, owner, app_name, conf_name,
 
     uri = _conf_endpoint_ns(splunkd_uri, owner, app_name, conf_name)
     msg = "Failed to create stanza=%s in conf=%s" % (stanza, conf_name)
-    payload = {"name": unicode(stanza).encode('utf-8')}
+    payload = {"name": six.text_type(stanza).encode('utf-8')}
     for key in key_values:
         if key != "name":
             payload[key] = str(key_values[key])

@@ -22,6 +22,7 @@ import socket
 from functools import wraps
 
 from . import ip_math
+from six.moves import zip
 
 __all__ = ['resolve_hostname']
 
@@ -113,12 +114,12 @@ def check_css_params(**validators):
         @wraps(f)
         def wrapper(*args, **kwargs):
             arg_spec = inspect.getargspec(f)
-            actual_args = dict(list(itertools.izip(arg_spec.args, args)) +
-                               list(kwargs.iteritems()))
+            actual_args = dict(list(zip(arg_spec.args, args)) +
+                               list(kwargs.items()))
             dfs = arg_spec.defaults
-            optional = dict(zip(arg_spec.args[-len(dfs):], dfs)) if dfs else {}
+            optional = dict(list(zip(arg_spec.args[-len(dfs):], dfs))) if dfs else {}
 
-            for arg, func in validators.iteritems():
+            for arg, func in validators.items():
                 if arg not in actual_args:
                     continue
                 value = actual_args[arg]

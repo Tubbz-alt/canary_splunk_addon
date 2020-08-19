@@ -21,7 +21,7 @@ call instead of calling splunklib SDK directly in business logic code.
 import logging
 import os
 import traceback
-import urllib2
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 from cStringIO import StringIO
 
 from .net_utils import check_css_params
@@ -41,8 +41,8 @@ def _get_proxy_info(context):
 
     user_pass = ''
     if context.get('proxy_username') and context.get('proxy_password'):
-        username = urllib2.quote(context['proxy_username'], safe='')
-        password = urllib2.quote(context['proxy_password'], safe='')
+        username = six.moves.urllib.parse.quote(context['proxy_username'], safe='')
+        password = six.moves.urllib.parse.quote(context['proxy_password'], safe='')
         user_pass = '{user}:{password}@'.format(
             user=username, password=password)
 

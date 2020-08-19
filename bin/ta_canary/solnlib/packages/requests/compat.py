@@ -7,6 +7,7 @@ pythoncompat
 from .packages import chardet
 
 import sys
+import six
 
 # -------
 # Pythons
@@ -33,18 +34,18 @@ except (ImportError, SyntaxError):
 # ---------
 
 if is_py2:
-    from urllib import quote, unquote, quote_plus, unquote_plus, urlencode, getproxies, proxy_bypass
-    from urlparse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
+    from six.moves.urllib.parse import quote, unquote, quote_plus, unquote_plus, urlencode
+    from six.moves.urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
     from urllib2 import parse_http_list
-    import cookielib
-    from Cookie import Morsel
+    import six.moves.http_cookiejar
+    from six.moves.http_cookies import Morsel
     from StringIO import StringIO
     from .packages.urllib3.packages.ordered_dict import OrderedDict
 
     builtin_str = str
     bytes = str
-    str = unicode
-    basestring = basestring
+    str = six.text_type
+    six.string_types = six.string_types
     numeric_types = (int, long, float)
 
 elif is_py3:
@@ -58,5 +59,5 @@ elif is_py3:
     builtin_str = str
     str = str
     bytes = bytes
-    basestring = (str, bytes)
+    six.string_types = (str, bytes)
     numeric_types = (int, float)

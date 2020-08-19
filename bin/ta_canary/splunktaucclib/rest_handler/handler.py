@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 import json
 import traceback
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 from functools import wraps
 from solnlib.packages.splunklib import binding
 from solnlib.splunk_rest_client import SplunkRestClient

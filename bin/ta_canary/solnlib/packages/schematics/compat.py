@@ -5,6 +5,9 @@ from __future__ import absolute_import
 import functools
 import operator
 import sys
+import six
+from six.moves import map
+from six.moves import zip
 
 
 __all__ = ['PY2', 'PY3', 'string_type', 'iteritems', 'metaclass', 'py_native_string', 'str_compat']
@@ -17,11 +20,11 @@ PY3 = sys.version_info[0] == 3
 if PY2:
     __all__ += ['bytes', 'str', 'map', 'zip', 'range']
     bytes = str
-    str = unicode
-    string_type = basestring
+    str = six.text_type
+    string_type = six.string_types
     range = xrange
-    from itertools import imap as map
-    from itertools import izip as zip
+    
+    
     iteritems = operator.methodcaller('iteritems')
 else:
     string_type = str

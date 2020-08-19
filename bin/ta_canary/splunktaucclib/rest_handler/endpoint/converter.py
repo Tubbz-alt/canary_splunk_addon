@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 import base64
 import json
+import six
 
 __all__ = [
     'Converter',
@@ -188,7 +189,7 @@ class Unifier(Normaliser):
         self._case_sensitive = case_sensitive
         self._default = default
         self._value_map = {}
-        for val_new, val_old_list in value_map.iteritems():
+        for val_new, val_old_list in value_map.items():
             for val_old in val_old_list:
                 val_old = val_old if case_sensitive else val_old.lower()
                 assert val_old not in self._value_map, \
@@ -197,7 +198,7 @@ class Unifier(Normaliser):
 
     def normalize(self, value, data):
         need_lower = not self._case_sensitive and \
-                     isinstance(value, basestring)
+                     isinstance(value, six.string_types)
         val_old = value.lower() if need_lower else value
         val_default = self._default or value
         return self._value_map.get(val_old, val_default)
@@ -248,7 +249,7 @@ class Mapping(Converter):
         super(Mapping, self).__init__()
         self._case_sensitive = case_sensitive
         self._map_interface, self._map_storage = {}, {}
-        for interface, storage in value_map.iteritems():
+        for interface, storage in value_map.items():
             self._check_and_set(interface, storage)
 
     def _check_and_set(self, interface, storage):

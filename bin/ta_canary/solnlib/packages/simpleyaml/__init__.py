@@ -7,6 +7,7 @@ from .nodes import *
 
 from .loader import *
 from .dumper import *
+import six
 
 __version__ = '3.10'
 
@@ -283,13 +284,11 @@ class YAMLObjectMetaclass(type):
             cls.yaml_loader.add_constructor(cls.yaml_tag, cls.from_yaml)
             cls.yaml_dumper.add_representer(cls, cls.to_yaml)
 
-class YAMLObject(object):
+class YAMLObject(six.with_metaclass(YAMLObjectMetaclass, object)):
     """
     An object that can dump itself to a YAML stream
     and load itself from a YAML stream.
     """
-
-    __metaclass__ = YAMLObjectMetaclass
     __slots__ = ()  # no direct instantiation, so allow immutable subclasses
 
     yaml_loader = Loader

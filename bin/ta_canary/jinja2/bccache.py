@@ -25,6 +25,7 @@ import fnmatch
 from hashlib import sha1
 from jinja2.utils import open_if_exists
 from jinja2._compat import BytesIO, pickle, PY2, text_type
+from io import open
 
 
 # marshal works better on 3.x, one hack less required

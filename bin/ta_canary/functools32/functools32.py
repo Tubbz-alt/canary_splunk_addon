@@ -16,8 +16,9 @@ from collections import MutableMapping, namedtuple
 from .reprlib32 import recursive_repr as _recursive_repr
 from weakref import proxy as _proxy
 import sys as _sys
+from six.moves import zip
 try:
-    from thread import allocate_lock as Lock
+    from six.moves._thread import allocate_lock as Lock
 except ImportError:
     from ._dummy_thread32 import allocate_lock as Lock
 
@@ -234,7 +235,7 @@ class OrderedDict(dict):
         '''
         if isinstance(other, OrderedDict):
             return len(self)==len(other) and \
-                   all(p==q for p, q in zip(self.items(), other.items()))
+                   all(p==q for p, q in zip(list(self.items()), list(other.items())))
         return dict.__eq__(self, other)
 
 # update_wrapper() and wraps() are tools to help write

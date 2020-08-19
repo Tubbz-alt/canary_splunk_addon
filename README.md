@@ -23,9 +23,9 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 
 ## Setup
 ### Canary Tools Setup
-1. Visit your canary console by going to https://yourconsole.canary.tools/settings
+1. Visit your Canary Console by going to https://yourconsole.canary.tools/settings
 2. Scroll down to API and click on.
-3. Enter your password at the top of the page twice 
+3. Enter your password at the top of the page twice
 4. Click Save
 5. Take note of the generated API key.  You will need this.
 
@@ -36,7 +36,7 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 3. On the Search Head open a browser to to http://yoursplunkserver:8000/en-GB/app/TA-canary/configuration
 4. Enable a proxy if it is required
 5. Click Add-on Settings and enter the API Key from Step 5 above.
-6. Enter your Canary Domain, if your full domain is https://yourconsole.canary.tools/ then use 'yourconsole'. 
+6. Enter your Canary Domain, if your full domain is https://yourconsole.canary.tools/ then use 'yourconsole'.
 7. Click Save
 8. Repeat steps 4-7 on the heavy forwarder.
 7. If you have proxy rules  allow https://*.canary.tools/ from your Search Head and Heavy Forwarder

@@ -3,6 +3,7 @@ import textwrap
 from jsonschema import Draft4Validator, exceptions
 from jsonschema.compat import PY3
 from jsonschema.tests.compat import mock, unittest
+from six.moves import range
 
 
 class TestBestMatch(unittest.TestCase):

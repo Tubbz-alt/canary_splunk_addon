@@ -1,7 +1,7 @@
 import os
 import os.path as op
 import subprocess
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 from cStringIO import StringIO
 
 from .common import util as scu

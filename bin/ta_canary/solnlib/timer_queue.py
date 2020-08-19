@@ -16,7 +16,7 @@
 A simple thread safe timer queue implementation which has O(logn) time complexity.
 '''
 
-import Queue
+import six.moves.queue
 import logging
 import threading
 import traceback
@@ -219,7 +219,7 @@ class TimerQueue(object):
     def __init__(self):
         self._timers = TimerQueueStruct()
         self._lock = threading.Lock()
-        self._wakeup_queue = Queue.Queue()
+        self._wakeup_queue = six.moves.queue.Queue()
         self._thr = threading.Thread(target=self._check_and_execute)
         self._thr.daemon = True
         self._started = False
@@ -279,7 +279,7 @@ class TimerQueue(object):
 
     def _check_and_execute(self):
         wakeup_queue = self._wakeup_queue
-        while 1:
+        while True:
             (next_expired_time, expired_timers) = self._get_expired_timers()
             for timer in expired_timers:
                 try:
@@ -295,7 +295,7 @@ class TimerQueue(object):
                 wakeup = wakeup_queue.get(timeout=sleep_time)
                 if wakeup is TEARDOWN_SENTINEL:
                     break
-            except Queue.Empty:
+            except six.moves.queue.Empty:
                 pass
         logging.info('TimerQueue stopped.')
 

@@ -6,6 +6,7 @@ in the original list?" in time O(log(# runs)).
 """
 
 import bisect
+from six.moves import range
 
 def intranges_from_list(list_):
     """Represent a list of integers as a sequence of ranges:

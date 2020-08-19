@@ -6,13 +6,14 @@ import warnings
 
 from socket import error as SocketError, timeout as SocketTimeout
 import socket
+from six.moves import range
 
 try:  # Python 3
     from queue import LifoQueue, Empty, Full
 except ImportError:
-    from Queue import LifoQueue, Empty, Full
+    from six.moves.queue import LifoQueue, Empty, Full
     # Queue is imported for side effects on MS Windows
-    import Queue as _unused_module_Queue  # noqa: unused
+    import six.moves.queue as _unused_module_Queue  # noqa: unused
 
 
 from .exceptions import (
@@ -184,7 +185,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         self.proxy_headers = _proxy_headers or {}
 
         # Fill the queue up so that doing get() on it will block properly
-        for _ in xrange(maxsize):
+        for _ in range(maxsize):
             self.pool.put(None)
 
         # These are mostly for testing and debugging purposes.

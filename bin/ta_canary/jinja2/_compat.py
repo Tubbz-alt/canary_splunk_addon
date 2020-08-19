@@ -11,6 +11,10 @@
     :license: BSD, see LICENSE for details.
 """
 import sys
+import six
+from six.moves import map
+from six.moves import zip
+from six.moves import filter
 
 PY2 = sys.version_info[0] == 2
 PYPY = hasattr(sys, 'pypy_translation_info')
@@ -24,9 +28,9 @@ if not PY2:
     string_types = (str,)
     integer_types = (int,)
 
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
+    iterkeys = lambda d: iter(list(d.keys()))
+    itervalues = lambda d: iter(list(d.values()))
+    iteritems = lambda d: iter(list(d.items()))
 
     import pickle
     from io import BytesIO, StringIO
@@ -49,22 +53,22 @@ if not PY2:
 
 else:
     unichr = unichr
-    text_type = unicode
+    text_type = six.text_type
     range_type = xrange
-    string_types = (str, unicode)
-    integer_types = (int, long)
+    string_types = (str, six.text_type)
+    integer_types = six.integer_types
 
-    iterkeys = lambda d: d.iterkeys()
-    itervalues = lambda d: d.itervalues()
-    iteritems = lambda d: d.iteritems()
+    iterkeys = lambda d: iter(d.keys())
+    itervalues = lambda d: iter(d.values())
+    iteritems = lambda d: iter(d.items())
 
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
     from cStringIO import StringIO as BytesIO, StringIO
     NativeStringIO = BytesIO
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
-    from itertools import imap, izip, ifilter
+    
     intern = intern
 
     def implements_iterator(cls):
@@ -80,7 +84,7 @@ else:
     get_next = lambda x: x.next
 
     def encode_filename(filename):
-        if isinstance(filename, unicode):
+        if isinstance(filename, six.text_type):
             return filename.encode('utf-8')
         return filename
 
@@ -108,4 +112,4 @@ def with_metaclass(meta, *bases):
 try:
     from urllib.parse import quote_from_bytes as url_quote
 except ImportError:
-    from urllib import quote as url_quote
+    from six.moves.urllib.parse import quote as url_quote

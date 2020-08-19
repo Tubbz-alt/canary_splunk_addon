@@ -16,7 +16,7 @@ def _valid_init_args(type_):
     return args
 
 def _filter_kwargs(valid_args, kwargs):
-    return dict((k, v) for k, v in kwargs.items() if k in valid_args)
+    return dict((k, v) for k, v in list(kwargs.items()) if k in valid_args)
 
 
 class UnionType(BaseType):
@@ -47,7 +47,7 @@ class UnionType(BaseType):
         super(UnionType, self).__init__(**_filter_kwargs(self._baseclass_args, kwargs))
 
     def resolve(self, value, context):
-        for field in self._types.values():
+        for field in list(self._types.values()):
             try:
                 value = field.convert(value, context)
             except ConversionError:

@@ -17,6 +17,7 @@ This module provides IP manipulate/calculation functionalities.
 '''
 
 import re
+import six
 
 
 __all__ = ['ip2long',
@@ -42,7 +43,7 @@ def ip2long(addr):
 
     if is_valid_ip(addr):
         ip = [int(x) for x in addr.split('.')]
-        return 16777216L * ip[0] + 65536 * ip[1] + 256 * ip[2] + ip[3]
+        return 16777216 * ip[0] + 65536 * ip[1] + 256 * ip[2] + ip[3]
 
     raise ValueError('Invalid ip address, should be a dotted IPv4 string.')
 
@@ -56,7 +57,7 @@ def long2ip(addr):
     :rtype: ``string``
     '''
 
-    if isinstance(addr, (int, long)):
+    if isinstance(addr, six.integer_types):
         ip = long(addr)
         if ip >= 0 and ip < pow(2, 32):
             return '{}.{}.{}.{}'.format((ip >> 24) % 256, (ip >> 16) % 256,

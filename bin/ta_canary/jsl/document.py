@@ -207,8 +207,8 @@ class DocumentMeta(with_metaclass(Prepareable, type)):
             for key, value in inspect.getmembers(attrs['Options']):
                 if not key.startswith('_') and value is not None:
                     # HACK HACK HACK
-                    if inspect.ismethod(value) and value.im_self is None:
-                        value = value.im_func
+                    if inspect.ismethod(value) and value.__self__ is None:
+                        value = value.__func__
                     options[key] = value
         return options
 

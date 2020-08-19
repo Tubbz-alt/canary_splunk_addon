@@ -17,6 +17,7 @@ This module provides Splunk modular input event encapsulation.
 '''
 
 import json
+import six
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -134,7 +135,7 @@ class XMLEvent(Event):
             if value:
                 ET.SubElement(_event, node).text = value
 
-        if isinstance(self._data, (unicode, basestring)):
+        if isinstance(self._data, (six.text_type, six.string_types)):
             ET.SubElement(_event, 'data').text = self._data
         else:
             ET.SubElement(_event, 'data').text = json.dumps(self._data)

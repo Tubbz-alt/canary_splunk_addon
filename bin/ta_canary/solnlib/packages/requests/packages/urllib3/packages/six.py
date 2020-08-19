@@ -1,4 +1,5 @@
 """Utilities for writing code that runs on Python 2 and 3"""
+from __future__ import absolute_import
 
 #Copyright (c) 2010-2011 Benjamin Peterson
 
@@ -22,6 +23,7 @@
 import operator
 import sys
 import types
+from . import six
 
 __author__ = "Benjamin Peterson <benjamin@python.org>"
 __version__ = "1.2.0"  # Revision 41c74fef2ded
@@ -39,10 +41,10 @@ if PY3:
 
     MAXSIZE = sys.maxsize
 else:
-    string_types = basestring,
-    integer_types = (int, long)
-    class_types = (type, types.ClassType)
-    text_type = unicode
+    string_types = six.string_types,
+    integer_types = six.integer_types
+    class_types = (type, type)
+    text_type = six.text_type
     binary_type = str
 
     if sys.platform.startswith("java"):
@@ -228,7 +230,7 @@ try:
     advance_iterator = next
 except NameError:
     def advance_iterator(it):
-        return it.next()
+        return next(it)
 next = advance_iterator
 
 
@@ -242,7 +244,7 @@ if PY3:
         return any("__call__" in klass.__dict__ for klass in type(obj).__mro__)
 else:
     def get_unbound_function(unbound):
-        return unbound.im_func
+        return unbound.__func__
 
     class Iterator(object):
 
@@ -291,7 +293,7 @@ else:
     def b(s):
         return s
     def u(s):
-        return unicode(s, "unicode_escape")
+        return six.text_type(s, "unicode_escape")
     int2byte = chr
     import StringIO
     StringIO = BytesIO = StringIO.StringIO
@@ -338,19 +340,19 @@ else:
         if fp is None:
             return
         def write(data):
-            if not isinstance(data, basestring):
+            if not isinstance(data, six.string_types):
                 data = str(data)
             fp.write(data)
         want_unicode = False
         sep = kwargs.pop("sep", None)
         if sep is not None:
-            if isinstance(sep, unicode):
+            if isinstance(sep, six.text_type):
                 want_unicode = True
             elif not isinstance(sep, str):
                 raise TypeError("sep must be None or a string")
         end = kwargs.pop("end", None)
         if end is not None:
-            if isinstance(end, unicode):
+            if isinstance(end, six.text_type):
                 want_unicode = True
             elif not isinstance(end, str):
                 raise TypeError("end must be None or a string")
@@ -358,12 +360,12 @@ else:
             raise TypeError("invalid keyword arguments to print()")
         if not want_unicode:
             for arg in args:
-                if isinstance(arg, unicode):
+                if isinstance(arg, six.text_type):
                     want_unicode = True
                     break
         if want_unicode:
-            newline = unicode("\n")
-            space = unicode(" ")
+            newline = six.text_type("\n")
+            space = six.text_type(" ")
         else:
             newline = "\n"
             space = " "

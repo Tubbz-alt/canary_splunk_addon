@@ -3,11 +3,12 @@
 Compatibility utils for Python 2 & 3.
 """
 import sys
+import six
 
 
 IS_PY3 = sys.version_info[0] == 3
-string_types = (str, ) if IS_PY3 else (basestring, )
-text_type = str if IS_PY3 else unicode
+string_types = (str, ) if IS_PY3 else (six.string_types, )
+text_type = str if IS_PY3 else six.text_type
 _identity = lambda x: x
 
 
@@ -16,7 +17,7 @@ if IS_PY3:
 
     implements_to_string = _identity
 else:
-    from urlparse import urljoin, urlunsplit, urlsplit
+    from six.moves.urllib.parse import urljoin, urlunsplit, urlsplit
 
     def implements_to_string(cls):
         cls.__unicode__ = cls.__str__

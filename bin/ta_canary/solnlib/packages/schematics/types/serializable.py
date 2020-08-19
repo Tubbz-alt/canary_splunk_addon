@@ -50,7 +50,7 @@ def serializable(arg=None, **kwargs):
         # so update it with the options found in `kwargs`.
         serialized_type._set_export_level(kwargs.pop('export_level', None),
                                           kwargs.pop("serialize_when_none", None))
-        for name, value in kwargs.items():
+        for name, value in list(kwargs.items()):
             setattr(serialized_type, name, value)
     else:
         serialized_type = serialized_type(**kwargs)

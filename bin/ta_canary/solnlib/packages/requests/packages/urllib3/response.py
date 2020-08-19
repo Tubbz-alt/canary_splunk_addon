@@ -9,10 +9,11 @@ from ._collections import HTTPHeaderDict
 from .exceptions import (
     ProtocolError, DecodeError, ReadTimeoutError, ResponseNotChunked
 )
-from .packages.six import string_types as basestring, binary_type, PY3
+from .packages.six import string_types as six.string_types, binary_type, PY3
 from .packages.six.moves import http_client as httplib
 from .connection import HTTPException, BaseSSLError
 from .util.response import is_fp_closed, is_response_to_head
+import six
 
 
 class DeflateDecoder(object):
@@ -114,7 +115,7 @@ class HTTPResponse(io.IOBase):
         self._original_response = original_response
         self._fp_bytes_read = 0
 
-        if body and isinstance(body, (basestring, binary_type)):
+        if body and isinstance(body, (six.string_types, binary_type)):
             self._body = body
 
         self._pool = pool
@@ -359,7 +360,7 @@ class HTTPResponse(io.IOBase):
 
         if not isinstance(headers, HTTPHeaderDict):
             if PY3:  # Python 3
-                headers = HTTPHeaderDict(headers.items())
+                headers = HTTPHeaderDict(list(headers.items()))
             else:  # Python 2
                 headers = HTTPHeaderDict.from_httplib(headers)
 

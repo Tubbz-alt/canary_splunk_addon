@@ -8,13 +8,15 @@ from jsonpath_rw import parse
 from .exceptions import FuncException, StopCCEIteration
 from .pipemgr import PipeManager
 from ..common import util, log
+import six
+from six.moves import range
 
 _logger = log.get_cc_logger()
 
 
 def regex_search(pattern, source, flags=0):
     """Search substring in source through regex"""
-    if not isinstance(source, basestring):
+    if not isinstance(source, six.string_types):
         _logger.warning('Cannot apply regex search on non-string: %s', type(source))
         return {}
     try:
@@ -69,7 +71,7 @@ def json_path(source, json_path_expr):
         _logger.debug('source to apply JSONPATH is empty, return empty.')
         return ''
 
-    if isinstance(source, basestring):
+    if isinstance(source, six.string_types):
         _logger.debug(
             'source expected is a JSON, not %s. Attempt to'
             ' convert it to JSON',
@@ -152,12 +154,12 @@ def std_output(candidates):
     """ Output a string to stdout.
     :param candidates: List of string to output to stdout or a single string.
     """
-    if isinstance(candidates, basestring):
+    if isinstance(candidates, six.string_types):
         candidates = [candidates]
 
     all_str = True
     for candidate in candidates:
-        if all_str and not isinstance(candidate, basestring):
+        if all_str and not isinstance(candidate, six.string_types):
             all_str = False
             _logger.warning(
                 'The type of data needs to print is "%s" rather than'
@@ -185,7 +187,7 @@ def _parse_json(source, json_path_expr=None):
         )
         source = json_path(source, json_path_expr)
 
-    elif isinstance(source, basestring):
+    elif isinstance(source, six.string_types):
         source = json.loads(source)
 
     return source
@@ -277,7 +279,7 @@ def time_str2str(date_string, from_format, to_format):
     """Convert a date string with given format to another format. Return
     the original date string if it's type is not string or failed to parse or
     convert it with format."""
-    if not isinstance(date_string, basestring):
+    if not isinstance(date_string, six.string_types):
         _logger.warning(
             '"date_string" must be a string type, found %s,'
             ' return the original date_string directly.',

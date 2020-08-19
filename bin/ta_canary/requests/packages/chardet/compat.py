@@ -19,10 +19,11 @@
 ######################### END LICENSE BLOCK #########################
 
 import sys
+import six
 
 
 if sys.version_info < (3, 0):
-    base_str = (str, unicode)
+    base_str = (str, six.text_type)
 else:
     base_str = (bytes, str)
 

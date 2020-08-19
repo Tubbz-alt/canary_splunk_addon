@@ -7,7 +7,7 @@ import os.path as op
 import datetime
 import sys
 import gc
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 
 def handle_tear_down_signals(callback):
@@ -105,4 +105,4 @@ def disable_stdout_buffer():
 
 
 def format_stanza_name(name):
-    return urllib.quote(name.encode("utf-8"), "")
+    return six.moves.urllib.parse.quote(name.encode("utf-8"), "")

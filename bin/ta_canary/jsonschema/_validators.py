@@ -3,6 +3,7 @@ import re
 from jsonschema import _utils
 from jsonschema.exceptions import FormatError, ValidationError
 from jsonschema.compat import iteritems
+from six.moves import zip
 
 
 def patternProperties(validator, patternProperties, instance, schema):

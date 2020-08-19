@@ -1,7 +1,7 @@
 import threading
 from time import time
 import random
-import Queue
+import six.moves.queue
 from ..common import log
 
 
@@ -16,7 +16,7 @@ class Scheduler(object):
 
     def __init__(self):
         self._jobs = Scheduler.sc.SortedSet()
-        self._wakeup_q = Queue.Queue()
+        self._wakeup_q = six.moves.queue.Queue()
         self._lock = threading.Lock()
         self._thr = threading.Thread(target=self._do_jobs)
         self._thr.deamon = True
@@ -48,12 +48,12 @@ class Scheduler(object):
         self._wakeup_q.put(True)
 
     def _do_jobs(self):
-        while 1:
+        while True:
             (sleep_time, jobs) = self.get_ready_jobs()
             self._do_execution(jobs)
             try:
                 done = self._wakeup_q.get(timeout=sleep_time)
-            except Queue.Empty:
+            except six.moves.queue.Empty:
                 pass
             else:
                 if done:

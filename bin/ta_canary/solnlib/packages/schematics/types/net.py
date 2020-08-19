@@ -5,15 +5,17 @@ from __future__ import unicode_literals, absolute_import
 import encodings.idna
 import random
 import re
+from six.moves import range
 
 try: # PY3
     from urllib.request import urlopen
     from urllib.parse import urlunsplit, quote as urlquote
     from urllib.error import URLError
 except ImportError: # PY2
-    from urllib2 import urlopen, URLError
-    from urlparse import urlunsplit
-    from urllib import quote as urlquote
+    from six.moves.urllib.request import urlopen
+    from six.moves.urllib.error import URLError
+    from six.moves.urllib.parse import urlunsplit
+    from six.moves.urllib.parse import quote as urlquote
 
 from ..common import * # pylint: disable=redefined-builtin
 from ..exceptions import ValidationError, StopValidationError

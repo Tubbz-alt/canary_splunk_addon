@@ -18,6 +18,7 @@ from ..exceptions import *
 from ..undefined import Undefined
 from ..util import listify
 from ..validate import prepare_validator, get_validation_context
+from six.moves import range
 
 
 def fill_template(template, min_length, max_length):
@@ -89,7 +90,7 @@ class TypeMeta(type):
 
         attrs['MESSAGES'] = messages
 
-        for attr_name, attr in attrs.items():
+        for attr_name, attr in list(attrs.items()):
             if attr_name.startswith("validate_"):
                 validators[attr_name] = 1
                 attrs[attr_name] = prepare_validator(attr, 3)
@@ -188,7 +189,7 @@ class BaseType(object):
         self.is_compound = False
 
         self.export_mapping = dict(
-            (format, getattr(self, fname)) for format, fname in self.EXPORT_METHODS.items())
+            (format, getattr(self, fname)) for format, fname in list(self.EXPORT_METHODS.items()))
 
     def __repr__(self):
         type_ = "%s(%s) instance" % (self.__class__.__name__, self._repr_info() or '')
@@ -840,7 +841,7 @@ class DateTimeType(BaseType):
         match = self.REGEX.match(value)
         if not match:
             return None
-        parts = dict(((k, v) for k, v in match.groupdict().items() if v is not None))
+        parts = dict(((k, v) for k, v in list(match.groupdict().items()) if v is not None))
         p = lambda name: int(parts.get(name, 0))
         microsecond = p('sec_frac') and p('sec_frac') * 10 ** (6 - len(parts['sec_frac']))
         if 'tzd_utc' in parts:
@@ -944,7 +945,7 @@ class GeoPointType(BaseType):
     @classmethod
     def _normalize(cls, value):
         if isinstance(value, dict):
-            return value.values()
+            return list(value.values())
         else:
             return value
 
@@ -1073,7 +1074,7 @@ class MultilingualStringType(BaseType):
         return localized
 
     def validate_length(self, value, context=None):
-        for locale, localized in value.items():
+        for locale, localized in list(value.items()):
             len_of_value = len(localized) if localized else 0
 
             if self.max_length is not None and len_of_value > self.max_length:
@@ -1086,7 +1087,7 @@ class MultilingualStringType(BaseType):
         if self.regex is None and self.locale_regex is None:
             return
 
-        for locale, localized in value.items():
+        for locale, localized in list(value.items()):
             if self.regex is not None and self.regex.match(localized) is None:
                 raise ValidationError(
                     self.messages['regex_localized'].format(locale))
@@ -1096,4 +1097,4 @@ class MultilingualStringType(BaseType):
                     self.messages['regex_locale'].format(locale))
 
 
-__all__ = [name for name, obj in globals().items() if isinstance(obj, TypeMeta)]
+__all__ = [name for name, obj in list(globals().items()) if isinstance(obj, TypeMeta)]

@@ -13,7 +13,7 @@ from splunk_aoblib.rest_migration import ConfigMigrationHandler
 
 util.remove_http_proxy_env_vars()
 
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 class URIEncoder(converter.Converter):
     # for the http proxy type if there are any special
@@ -21,7 +21,7 @@ class URIEncoder(converter.Converter):
     # encoded
     def encode(self, value, request):
         if request.get("proxy_type") == 'http':
-            return urllib.quote(value)
+            return six.moves.urllib.parse.quote(value)
         return value
 
     def decode(self, value, response):

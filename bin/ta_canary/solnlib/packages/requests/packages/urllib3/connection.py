@@ -11,8 +11,8 @@ try:  # Python 3
     from http.client import HTTPConnection as _HTTPConnection
     from http.client import HTTPException  # noqa: unused in this module
 except ImportError:
-    from httplib import HTTPConnection as _HTTPConnection
-    from httplib import HTTPException  # noqa: unused in this module
+    from six.moves.http_client import HTTPConnection as _HTTPConnection
+    from six.moves.http_client import HTTPException  # noqa: unused in this module
 
 try:  # Compiled with SSL?
     import ssl

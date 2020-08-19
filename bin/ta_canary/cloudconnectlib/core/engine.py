@@ -242,7 +242,7 @@ class Job(object):
         authorizer = request.auth
         self._get_checkpoint()
 
-        while 1:
+        while True:
             if self._check_should_stop():
                 return
 

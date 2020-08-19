@@ -20,7 +20,7 @@ import os
 import os.path as op
 import subprocess
 import socket
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 from cStringIO import StringIO
 
 from . import utils

@@ -4,6 +4,8 @@ import os
 import solnlib.utils as utils
 
 from splunktaucclib.global_config import GlobalConfig, GlobalConfigSchema
+from io import open
+from six.moves import range
 
 
 '''
@@ -132,13 +134,13 @@ class Setup_Util(object):
             # format the settings, the setting from env is from global_setting
             # meta
             self.__cached_global_settings = {}
-            for s_k, s_v in global_settings.iteritems():
+            for s_k, s_v in global_settings.items():
                 if s_k == PROXY_SETTINGS:
                     proxy_enabled = s_v.get(PROXY_ENABLE_KEY)
                     proxy_rdns = s_v.get(PROXY_RDNS_KEY)
-                    if type(proxy_enabled) != bool:
+                    if not isinstance(proxy_enabled, bool):
                         s_v[PROXY_ENABLE_KEY] = utils.is_true(proxy_enabled)
-                    if type(proxy_rdns) != bool:
+                    if not isinstance(proxy_rdns, bool):
                         s_v[PROXY_RDNS_KEY] = utils.is_true(proxy_rdns)
                     self.__cached_global_settings[PROXY_SETTINGS] = s_v
                 elif s_k == LOG_SETTINGS:
