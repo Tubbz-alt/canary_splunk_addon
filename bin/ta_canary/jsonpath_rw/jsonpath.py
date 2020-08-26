@@ -3,7 +3,6 @@ import logging
 import six
 from six.moves import xrange
 from itertools import *
-from six.moves import range
 
 logger = logging.getLogger(__name__)
 
@@ -314,7 +313,7 @@ class Descendants(JSONPath):
 
             elif isinstance(datum.value, dict):
                 recursive_matches = [submatch
-                                     for field in list(datum.value.keys())
+                                     for field in datum.value.keys()
                                      for submatch in match_recursively(DatumInContext(datum.value[field], context=datum, path=Fields(field)))]
 
             else:
@@ -492,7 +491,7 @@ class Slice(JSONPath):
         # Some iterators do not support slicing but we can still
         # at least work for '*'
         if self.start == None and self.end == None and self.step == None:
-            return [DatumInContext(datum.value[i], path=Index(i), context=datum) for i in range(0, len(datum.value))]
+            return [DatumInContext(datum.value[i], path=Index(i), context=datum) for i in xrange(0, len(datum.value))]
         else:
             return [DatumInContext(datum.value[i], path=Index(i), context=datum) for i in range(0, len(datum.value))[self.start:self.end:self.step]]
 

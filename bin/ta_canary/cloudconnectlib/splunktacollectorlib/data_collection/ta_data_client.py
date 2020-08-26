@@ -78,7 +78,7 @@ def client_adatper(job_func):
                 self._gen.send(self.is_stopped())
                 raise StopIteration
             if self._execute_times == 1:
-                return next(self._gen)
+                return self._gen.next()
             return self._gen.send(self.is_stopped())
 
     return TaDataClientAdapter

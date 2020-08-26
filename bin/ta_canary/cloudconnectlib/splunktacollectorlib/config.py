@@ -15,9 +15,7 @@ from ..splunktalib.common import util as sc_util
 
 from .common import log as stulog
 from .common import UCCException
-from six.moves.urllib.parse import quote
-import six
-from six.moves import range
+from urllib import quote
 
 LOGGING_STOPPED = False
 
@@ -106,12 +104,12 @@ class Config(object):
         ret = {meta_field: getattr(self, meta_field)
                for meta_field in Config.META_FIELDS}
 
-        for ep_id, ep in self._endpoints.items():
+        for ep_id, ep in self._endpoints.iteritems():
             data = {'output_mode': 'json', '--cred--': '1'}
 
             retries = 4
             waiting_time = [1, 2, 2]
-            for retry in range(retries):
+            for retry in xrange(retries):
                 resp, cont = splunkd_request(
                     splunkd_uri=self.make_uri(ep_id),
                     session_key=self.session_key,
@@ -129,7 +127,7 @@ class Config(object):
 
                 try:
                     ret[ep_id] = self._parse_content(ep_id, cont)
-                except ConfigException as exc:
+                except ConfigException, exc:
                     log(exc, level=logging.WARNING, need_tb=True)
                     if retry < retries-1:
                         time.sleep(waiting_time[retry])
@@ -250,9 +248,9 @@ class Config(object):
             raise ConfigException(msg)
 
         ret = {name: {key: self.load_value(endpoint_id, name, key, val)
-                      for key, val in ent.items()
+                      for key, val in ent.iteritems()
                       if not key.startswith('eai:')}
-               for name, ent in ret.items()}
+               for name, ent in ret.iteritems()}
         return ret
 
     def _parse_schema(self, ucc_config_schema):
@@ -267,16 +265,16 @@ class Config(object):
             raise ConfigException(exc)
 
         ucc_config_schema.update({key: val for key, val in
-                                  Config.META_FIELDS_DEFAULT.items()
+                                  Config.META_FIELDS_DEFAULT.iteritems()
                                   if key not in ucc_config_schema})
         for field in Config.META_FIELDS:
             assert field in ucc_config_schema and \
-                isinstance(ucc_config_schema[field], six.string_types), \
+                isinstance(ucc_config_schema[field], basestring), \
                 'Missing or invalid field "%s" in given schema' % field
             setattr(self, field, ucc_config_schema[field])
 
         self._endpoints = {}
-        for key, val in ucc_config_schema.items():
+        for key, val in ucc_config_schema.iteritems():
             if key.startswith('_'):
                 continue
 
@@ -334,7 +332,7 @@ class Config(object):
                 return json.dumps(fval)
             else:
                 return fval
-        except Exception as exc:
+        except Exception, exc:
             msg = 'Fail to dump value of "{type_name}" - ' \
                   'endpoint={endpoint}, item={item}, field={field}' \
                   ''.format(type_name=field_type,

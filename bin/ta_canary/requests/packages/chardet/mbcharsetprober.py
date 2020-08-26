@@ -30,7 +30,6 @@
 import sys
 from . import constants
 from .charsetprober import CharSetProber
-from six.moves import range
 
 
 class MultiByteCharSetProber(CharSetProber):

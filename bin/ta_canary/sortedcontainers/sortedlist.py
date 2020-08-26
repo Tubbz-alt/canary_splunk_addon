@@ -13,17 +13,14 @@ from math import log as log_e
 import operator as op
 from operator import iadd, add
 from sys import hexversion
-from six.moves import zip
-from six.moves import map
-from six.moves import range
 
 if hexversion < 0x03000000:
-    
-    
+    from itertools import izip as zip
+    from itertools import imap as map
     try:
-        from six.moves._thread import get_ident
+        from thread import get_ident
     except ImportError:
-        from six.moves._dummy_thread import get_ident
+        from dummy_thread import get_ident
 else:
     from functools import reduce
     try:
@@ -562,7 +559,7 @@ class SortedList(MutableSequence):
                     self._clear()
                     return self._update(values)
 
-            indices = list(range(start, stop, step))
+            indices = range(start, stop, step)
 
             # Delete items from greatest index to least so
             # that the indices remain valid throughout iteration.
@@ -619,7 +616,7 @@ class SortedList(MutableSequence):
             # reverse the order of the items and this could
             # be the desired behavior.
 
-            indices = list(range(start, stop, step))
+            indices = range(start, stop, step)
             return list(self._getitem(index) for index in indices)
         else:
             if self._len:
@@ -698,7 +695,7 @@ class SortedList(MutableSequence):
 
         if isinstance(index, slice):
             start, stop, step = index.indices(self._len)
-            indices = list(range(start, stop, step))
+            indices = range(start, stop, step)
 
             if step != 1:
                 if not hasattr(value, '__len__'):
@@ -755,7 +752,7 @@ class SortedList(MutableSequence):
 
                 # Check that the given values are ordered properly.
 
-                iterator = list(range(1, len(value)))
+                iterator = range(1, len(value))
 
                 if not all(value[pos - 1] <= value[pos] for pos in iterator):
                     raise ValueError('given sequence not in sort order')
@@ -1826,7 +1823,7 @@ class SortedListWithKey(SortedList):
 
         if isinstance(index, slice):
             start, stop, step = index.indices(self._len)
-            indices = list(range(start, stop, step))
+            indices = range(start, stop, step)
 
             if step != 1:
                 if not hasattr(value, '__len__'):
@@ -1887,7 +1884,7 @@ class SortedListWithKey(SortedList):
                 # Check that the given values are ordered properly.
 
                 keys = tuple(map(self._key, value))
-                iterator = list(range(1, len(keys)))
+                iterator = range(1, len(keys))
 
                 if not all(keys[pos - 1] <= keys[pos] for pos in iterator):
                     raise ValueError('given sequence not in sort order')

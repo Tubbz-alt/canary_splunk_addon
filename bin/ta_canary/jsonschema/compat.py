@@ -1,7 +1,5 @@
 import operator
 import sys
-import six
-from six.moves import zip
 
 
 try:
@@ -24,14 +22,14 @@ if PY3:
     int_types = int,
     iteritems = operator.methodcaller("items")
 else:
-      # noqa
+    from itertools import izip as zip  # noqa
     from StringIO import StringIO
-    from six.moves.urllib.parse import (
+    from urlparse import (
         urljoin, urlunsplit, SplitResult, urlsplit as _urlsplit # noqa
     )
-    from six.moves.urllib.parse import unquote  # noqa
-    from six.moves.urllib.request import urlopen  # noqa
-    str_types = six.string_types
+    from urllib import unquote  # noqa
+    from urllib2 import urlopen  # noqa
+    str_types = basestring
     int_types = int, long
     iteritems = operator.methodcaller("iteritems")
 

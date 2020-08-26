@@ -310,7 +310,7 @@ class InternationalizationExtension(Extension):
         """Parse until the next block tag with a given name."""
         referenced = []
         buf = []
-        while True:
+        while 1:
             if parser.stream.current.type == 'data':
                 buf.append(parser.stream.current.value.replace('%', '%%'))
                 next(parser.stream)
@@ -382,7 +382,7 @@ class InternationalizationExtension(Extension):
             if variables:
                 node = nodes.Mod(node, nodes.Dict([
                     nodes.Pair(nodes.Const(key), value)
-                    for key, value in list(variables.items())
+                    for key, value in variables.items()
                 ]))
         return nodes.Output([node])
 

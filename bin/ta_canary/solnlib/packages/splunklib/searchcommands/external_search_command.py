@@ -20,7 +20,7 @@ from logging import getLogger
 import os
 import sys
 import traceback
-import six
+from .. import six
 
 if sys.platform == 'win32':
     from signal import signal, CTRL_BREAK_EVENT, SIGBREAK, SIGINT, SIGTERM
@@ -143,7 +143,9 @@ class ExternalSearchCommand(object):
             p.wait()
 
             logger.debug('finished command="%s", arguments=%s, pid=%d, returncode=%d', path, argv, p.pid, p.returncode)
-            sys.exit(p.returncode)
+
+            if p.returncode != 0:
+                sys.exit(p.returncode)
 
         @staticmethod
         def _search_path(executable, paths):

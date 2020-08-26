@@ -1,10 +1,9 @@
-import six.moves.queue
+import Queue
 import multiprocessing
 import threading
 import sys
 from collections import Iterable
 from .common import log
-import six
 
 
 class EventWriter(object):
@@ -14,7 +13,7 @@ class EventWriter(object):
             self._mgr = multiprocessing.Manager()
             self._event_queue = self._mgr.Queue(1000)
         else:
-            self._event_queue = six.moves.queue.Queue(1000)
+            self._event_queue = Queue.Queue(1000)
         self._event_writer = threading.Thread(target=self._do_write_events)
         self._event_writer.daemon = True
         self._started = False
@@ -53,11 +52,11 @@ class EventWriter(object):
         write = sys.stdout.write
         got_shutdown_signal = False
 
-        while True:
+        while 1:
             try:
                 event = event_queue.get(timeout=3)
                 if event is not None:
-                    if isinstance(event, six.string_types):
+                    if isinstance(event, basestring):
                         write(event)
                     elif isinstance(event, Iterable):
                         for evt in event:
@@ -65,7 +64,7 @@ class EventWriter(object):
                 else:
                     log.logger.info("Event writer got tear down signal")
                     got_shutdown_signal = True
-            except six.moves.queue.Empty:
+            except Queue.Empty:
                 # We need drain the queue before shutdown
                 # timeout means empty for now
                 if got_shutdown_signal:

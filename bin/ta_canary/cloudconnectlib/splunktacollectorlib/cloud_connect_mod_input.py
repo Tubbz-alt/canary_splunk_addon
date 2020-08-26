@@ -1,4 +1,4 @@
-import six.moves.configparser
+import ConfigParser
 import os.path as op
 
 from .data_collection import ta_mod_input as ta_input
@@ -6,7 +6,6 @@ from .ta_cloud_connect_client import TACloudConnectClient as CollectorCls
 from ..common.lib_util import (
     get_main_file, get_app_root_dir, get_mod_input_script_name
 )
-import os
 
 
 def _load_options_from_inputs_spec(app_root, stanza_name):
@@ -16,9 +15,9 @@ def _load_options_from_inputs_spec(app_root, stanza_name):
     if not op.isfile(file_path):
         raise RuntimeError("README/%s doesn't exist" % input_spec_file)
 
-    parser = six.moves.configparser.RawConfigParser(allow_no_value=True)
+    parser = ConfigParser.RawConfigParser(allow_no_value=True)
     parser.read(file_path)
-    options = list(parser.defaults().keys())
+    options = parser.defaults().keys()
     stanza_prefix = '%s://' % stanza_name
 
     stanza_exist = False

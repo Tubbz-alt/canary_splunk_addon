@@ -32,7 +32,6 @@ from .chardistribution import SJISDistributionAnalysis
 from .jpcntx import SJISContextAnalysis
 from .mbcssm import SJISSMModel
 from . import constants
-from six.moves import range
 
 
 class SJISProber(MultiByteCharSetProber):

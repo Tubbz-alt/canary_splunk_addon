@@ -29,7 +29,6 @@ from . import constants
 from .charsetprober import CharSetProber
 from .codingstatemachine import CodingStateMachine
 from .mbcssm import UTF8SMModel
-from six.moves import range
 
 ONE_CHAR_PROB = 0.5
 

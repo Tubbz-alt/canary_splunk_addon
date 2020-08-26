@@ -14,20 +14,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
 
 from collections import deque, namedtuple
-from six.moves import map
-import six
+from .. import six
 try:
     from collections import OrderedDict  # must be python 2.7
 except ImportError:
     from ..ordereddict import OrderedDict
-from cStringIO import StringIO
+from ..six.moves import StringIO
 from itertools import chain
+from ..six.moves import map as imap
 from json import JSONDecoder, JSONEncoder
 from json.encoder import encode_basestring_ascii as json_encode_string
-from six.moves.urllib.parse import unquote
+from ..six.moves import urllib
 
 import csv
 import gzip
@@ -245,7 +245,7 @@ class ConfigurationSettingsType(type):
 
     """
     def __new__(mcs, module, name, bases):
-        mcs = super(ConfigurationSettingsType, mcs).__new__(mcs, name, bases, {})
+        mcs = super(ConfigurationSettingsType, mcs).__new__(mcs, str(name), bases, {})
         return mcs
 
     def __init__(cls, module, name, bases):
@@ -259,17 +259,17 @@ class ConfigurationSettingsType(type):
             if isinstance(specification.type, type):
                 type_names = specification.type.__name__
             else:
-                type_names = ', '.join(map(lambda t: t.__name__, specification.type))
+                type_names = ', '.join(imap(lambda t: t.__name__, specification.type))
             raise ValueError('Expected {} value, not {}={}'.format(type_names, name, repr(value)))
         if specification.constraint and not specification.constraint(value):
             raise ValueError('Illegal value: {}={}'.format(name, repr(value)))
         return value
 
     specification = namedtuple(
-        b'ConfigurationSettingSpecification', (
-            b'type',
-            b'constraint',
-            b'supporting_protocols'))
+        'ConfigurationSettingSpecification', (
+            'type',
+            'constraint',
+            'supporting_protocols'))
 
     # P1 [ ] TODO: Review ConfigurationSettingsType.specification_matrix for completeness and correctness
 
@@ -296,7 +296,7 @@ class ConfigurationSettingsType(type):
             supporting_protocols=[1]),
         'maxinputs': specification(
             type=int,
-            constraint=lambda value: 0 <= value <= sys.maxsize,
+            constraint=lambda value: 0 <= value <= six.MAXSIZE,
             supporting_protocols=[2]),
         'overrides_timeorder': specification(
             type=bool,
@@ -328,17 +328,17 @@ class ConfigurationSettingsType(type):
             supporting_protocols=[1, 2]),
         'type': specification(
             type=(bytes, six.text_type),
-            constraint=lambda value: value in ('eventing', 'reporting', 'streaming'),
+            constraint=lambda value: value in ('events', 'reporting', 'streaming'),
             supporting_protocols=[2])}
 
 
 class CsvDialect(csv.Dialect):
     """ Describes the properties of Splunk CSV streams """
-    delimiter = b','
-    quotechar = b'"'
+    delimiter = ','
+    quotechar = '"'
     doublequote = True
     skipinitialspace = False
-    lineterminator = b'\r\n'
+    lineterminator = '\r\n'
     quoting = csv.QUOTE_MINIMAL
 
 
@@ -347,7 +347,7 @@ class InputHeader(dict):
 
     """
     def __str__(self):
-        return '\n'.join([name + ':' + value for name, value in self.items()])
+        return '\n'.join([name + ':' + value for name, value in six.iteritems(self)])
 
     def read(self, ifile):
         """ Reads an input header from an input file.
@@ -368,15 +368,15 @@ class InputHeader(dict):
                 # start of a new item
                 if name is not None:
                     self[name] = value[:-1]  # value sans trailing newline
-                name, value = item[0], unquote(item[1])
+                name, value = item[0], urllib.parse.unquote(item[1])
             elif name is not None:
                 # continuation of the current item
-                value += unquote(line)
+                value += urllib.parse.unquote(line)
 
         if name is not None: self[name] = value[:-1] if value[-1] == '\n' else value
 
 
-Message = namedtuple(b'Message', (b'type', b'text'))
+Message = namedtuple('Message', ('type', 'text'))
 
 
 class MetadataDecoder(JSONDecoder):
@@ -394,7 +394,7 @@ class MetadataDecoder(JSONDecoder):
         while len(stack):
             instance, member_name, dictionary = stack.popleft()
 
-            for name, value in dictionary.items():
+            for name, value in six.iteritems(dictionary):
                 if isinstance(value, dict):
                     stack.append((dictionary, name, value))
 
@@ -522,7 +522,7 @@ class RecordWriter(object):
             write_record(record)
 
     def _clear(self):
-        self._buffer.reset()
+        self._buffer.seek(0)
         self._buffer.truncate()
         self._inspector.clear()
         self._record_count = 0
@@ -539,8 +539,7 @@ class RecordWriter(object):
 
         if fieldnames is None:
             self._fieldnames = fieldnames = list(record.keys())
-            value_list = map(lambda fn: six.text_type(fn).encode('utf-8'), fieldnames)
-            value_list = map(lambda fn: (fn, b'__mv_' + fn), value_list)
+            value_list = imap(lambda fn: (str(fn), str('__mv_') + str(fn)), fieldnames)
             self._writerow(list(chain.from_iterable(value_list)))
 
         get_value = record.get
@@ -563,14 +562,14 @@ class RecordWriter(object):
 
                 if len(value) > 1:
                     value_list = value
-                    sv = b''
-                    mv = b'$'
+                    sv = ''
+                    mv = '$'
 
                     for value in value_list:
 
                         if value is None:
-                            sv += b'\n'
-                            mv += b'$;$'
+                            sv += '\n'
+                            mv += '$;$'
                             continue
 
                         value_t = type(value)
@@ -580,16 +579,16 @@ class RecordWriter(object):
                             if value_t is bool:
                                 value = str(value.real)
                             elif value_t is six.text_type:
-                                value = value.encode('utf-8', errors='backslashreplace')
-                            elif value_t is int or value_t is long or value_t is float or value_t is complex:
+                                value = value
+                            elif value_t is int or value_t is int or value_t is float or value_t is complex:
                                 value = str(value)
                             elif issubclass(value_t, (dict, list, tuple)):
                                 value = str(''.join(RecordWriter._iterencode_json(value, 0)))
                             else:
                                 value = repr(value).encode('utf-8', errors='backslashreplace')
 
-                        sv += value + b'\n'
-                        mv += value.replace(b'$', b'$$') + b'$;$'
+                        sv += value + '\n'
+                        mv += value.replace('$', '$$') + '$;$'
 
                     values += (sv[:-1], mv[:-2])
                     continue
@@ -606,10 +605,12 @@ class RecordWriter(object):
                 continue
 
             if value_t is six.text_type:
-                values += (value.encode('utf-8', errors='backslashreplace'), None)
+                if six.PY2:
+                    value = value.encode('utf-8')
+                values += (value, None)
                 continue
 
-            if value_t is int or value_t is long or value_t is float or value_t is complex:
+            if value_t is int or value_t is int or value_t is float or value_t is complex:
                 values += (str(value), None)
                 continue
 
@@ -617,7 +618,7 @@ class RecordWriter(object):
                 values += (str(''.join(RecordWriter._iterencode_json(value, 0))), None)
                 continue
 
-            values += (repr(value).encode('utf-8', errors='backslashreplace'), None)
+            values += (repr(value), None)
 
         self._writerow(values)
         self._record_count += 1
@@ -753,7 +754,7 @@ class RecordWriterV2(RecordWriter):
     def write_metadata(self, configuration):
         self._ensure_validity()
 
-        metadata = chain(iter(configuration.items()), (('inspector', self._inspector if self._inspector else None),))
+        metadata = chain(six.iteritems(configuration), (('inspector', self._inspector if self._inspector else None),))
         self._write_chunk(metadata, '')
         self._ofile.write('\n')
         self._clear()
@@ -779,7 +780,7 @@ class RecordWriterV2(RecordWriter):
         if not (metadata_length > 0 or body_length > 0):
             return
 
-        start_line = b'chunked 1.0,' + bytes(metadata_length) + b',' + bytes(body_length) + b'\n'
+        start_line = 'chunked 1.0,%s,%s\n' % (metadata_length, body_length)
         write = self._ofile.write
         write(start_line)
         write(metadata)

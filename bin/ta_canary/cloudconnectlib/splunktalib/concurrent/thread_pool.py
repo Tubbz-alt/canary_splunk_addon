@@ -3,14 +3,13 @@ A simple thread pool implementation
 """
 
 import threading
-import six.moves.queue
+import Queue
 import multiprocessing
 import traceback
 import exceptions
 from time import time
 
 from ..common import log
-from six.moves import range
 
 
 class ThreadPool(object):
@@ -35,12 +34,12 @@ class ThreadPool(object):
         self._max_size = max_size
         self._daemon = daemon
 
-        self._work_queue = six.moves.queue.Queue(task_queue_size)
+        self._work_queue = Queue.Queue(task_queue_size)
         self._thrs = []
         for _ in range(min_size):
             thr = threading.Thread(target=self._run)
             self._thrs.append(thr)
-        self._admin_queue = six.moves.queue.Queue()
+        self._admin_queue = Queue.Queue()
         self._admin_thr = threading.Thread(target=self._do_admin)
         self._last_resize_time = time()
         self._last_size = min_size
@@ -157,13 +156,13 @@ class ThreadPool(object):
             size = self._last_size
             self._last_size = new_size
             if new_size > size:
-                for _ in range(new_size - size):
+                for _ in xrange(new_size - size):
                     thr = threading.Thread(target=self._run)
                     thr.daemon = self._daemon
                     thr.start()
                     self._thrs.append(thr)
             elif new_size < size:
-                for _ in range(size - new_size):
+                for _ in xrange(size - new_size):
                     self._work_queue.put(None)
         log.logger.info("Finished ThreadPool resizing. New size=%d", new_size)
 
@@ -216,10 +215,10 @@ class ThreadPool(object):
     def _do_admin(self):
         admin_q = self._admin_queue
         resize_win = self._resize_window
-        while True:
+        while 1:
             try:
                 wakup = admin_q.get(timeout=resize_win + 1)
-            except six.moves.queue.Empty:
+            except Queue.Empty:
                 self._do_resize_according_to_loads()
                 continue
 
@@ -237,7 +236,7 @@ class ThreadPool(object):
 
         work_queue = self._work_queue
         count_lock = self._count_lock
-        while True:
+        while 1:
             log.logger.debug("Going to get job")
             func = work_queue.get()
             if func is None:
@@ -272,7 +271,7 @@ class AsyncResult(object):
         self._args = args
         self._kwargs = kwargs
         self._callback = callback
-        self._q = six.moves.queue.Queue()
+        self._q = Queue.Queue()
 
     def __call__(self):
         try:
@@ -303,7 +302,7 @@ class AsyncResult(object):
 
         try:
             res = self._q.get(timeout=timeout)
-        except six.moves.queue.Empty:
+        except Queue.Empty:
             raise multiprocessing.TimeoutError("Timed out")
 
         if isinstance(res, Exception):
@@ -317,7 +316,7 @@ class AsyncResult(object):
 
         try:
             res = self._q.get(timeout=timeout)
-        except six.moves.queue.Empty:
+        except Queue.Empty:
             pass
         else:
             self._q.put(res)

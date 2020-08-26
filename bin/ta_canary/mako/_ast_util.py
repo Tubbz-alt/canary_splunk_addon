@@ -32,7 +32,6 @@
 """
 from _ast import *  # noqa
 from mako.compat import arg_stringname
-from six.moves import zip
 
 BOOLOP_SYMBOLS = {
     And: 'and',

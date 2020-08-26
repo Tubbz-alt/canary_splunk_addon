@@ -20,26 +20,26 @@ fields = [
         encrypted=False,
         default=None,
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""", 
+            regex=r"""^\-[1-9]\d*$|^\d*$""",
         )
-    ), 
+    ),
     field.RestField(
         'index',
         required=True,
         encrypted=False,
         default='default',
         validator=validator.String(
-            min_len=1, 
-            max_len=80, 
+            min_len=1,
+            max_len=80,
         )
-    ), 
+    ),
     field.RestField(
         'debug_mode',
         required=True,
         encrypted=False,
         default='disabled',
         validator=None
-    ), 
+    ),
 
     field.RestField(
         'disabled',
@@ -59,6 +59,7 @@ endpoint = DataInputModel(
 
 
 if __name__ == '__main__':
+
     admin_external.handle(
         endpoint,
         handler=ConfigMigrationHandler,

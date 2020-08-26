@@ -1,7 +1,6 @@
 from .core import encode, decode, alabel, ulabel, IDNAError
 import codecs
 import re
-import six
 
 _unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
 
@@ -69,12 +68,12 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
             return (u"", 0)
 
         # IDNA allows decoding to operate on Unicode strings, too.
-        if isinstance(data, six.text_type):
+        if isinstance(data, unicode):
             labels = _unicode_dots_re.split(data)
         else:
             # Must be ASCII string
             data = str(data)
-            six.text_type(data, "ascii")
+            unicode(data, "ascii")
             labels = data.split(".")
 
         trailing_dot = u''

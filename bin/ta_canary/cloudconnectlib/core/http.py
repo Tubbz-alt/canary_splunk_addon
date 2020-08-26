@@ -6,7 +6,6 @@ from solnlib.packages.requests import PreparedRequest, utils
 from . import defaults
 from .exceptions import HTTPError
 from ..common.log import get_cc_logger
-from six.moves import range
 
 _logger = get_cc_logger()
 
@@ -210,7 +209,7 @@ class HTTPRequest(object):
         if the response status is configured in defaults.retry_statuses."""
         retries = max(defaults.retries, 0)
 
-        for i in range(retries + 1):
+        for i in xrange(retries + 1):
             try:
                 response, content = self._send_request(
                     uri, body=body, method=method, headers=headers

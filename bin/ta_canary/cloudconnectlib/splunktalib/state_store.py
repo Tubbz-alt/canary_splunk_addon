@@ -6,7 +6,6 @@ import time
 from ..splunktacollectorlib.common import log as stulog
 from ..splunktalib import kv_client as kvc
 from ..splunktalib.common import util
-from io import open
 
 
 def get_state_store(meta_configs,
@@ -88,7 +87,7 @@ class StateStore(BaseStateStore):
         if key:
             self._delete_state(key)
         else:
-            [self._delete_state(_key) for _key in list(self._states_cache.keys())]
+            [self._delete_state(_key) for _key in self._states_cache.keys()]
 
     def _delete_state(self, key):
         if key not in self._states_cache:
@@ -254,7 +253,7 @@ class CachedFileStateStore(BaseStateStore):
 
     def close(self, key=None):
         if not key:
-            for k, (t, s) in self._states_cache.items():
+            for k, (t, s) in self._states_cache.iteritems():
                 self.update_state_flush(t, k, s)
             self._states_cache.clear()
             self._states_cache_lmd.clear()

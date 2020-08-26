@@ -40,12 +40,11 @@ from .util.response import assert_header_parsing
 from .util.retry import Retry
 from .util.timeout import Timeout
 from .util.url import get_host, Url
-from six.moves import range
 
 
 if six.PY2:
     # Queue is imported for side effects on MS Windows
-    import six.moves.queue as _unused_module_Queue  # noqa: F401
+    import Queue as _unused_module_Queue  # noqa: F401
 
 xrange = six.moves.xrange
 
@@ -190,7 +189,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         self.proxy_headers = _proxy_headers or {}
 
         # Fill the queue up so that doing get() on it will block properly
-        for _ in range(maxsize):
+        for _ in xrange(maxsize):
             self.pool.put(None)
 
         # These are mostly for testing and debugging purposes.

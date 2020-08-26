@@ -39,7 +39,7 @@ _last_iteration = object()
 def markup_join(seq):
     """Concatenation that escapes if necessary and converts to unicode."""
     buf = []
-    iterator = map(soft_unicode, seq)
+    iterator = imap(soft_unicode, seq)
     for arg in iterator:
         buf.append(arg)
         if hasattr(arg, '__html__'):
@@ -49,7 +49,7 @@ def markup_join(seq):
 
 def unicode_join(seq):
     """Simple args to unicode conversion and concatenation."""
-    return concat(map(text_type, seq))
+    return concat(imap(text_type, seq))
 
 
 def new_context(environment, template_name, blocks, vars=None,
@@ -502,7 +502,7 @@ class Undefined(object):
         _fail_with_undefined_error
 
     def __eq__(self, other):
-        return isinstance(self, type(other))
+        return type(self) is type(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)

@@ -4,7 +4,6 @@ import pkgutil
 import re
 
 from jsonschema.compat import str_types, MutableMapping, urlsplit
-from six.moves import zip
 
 
 class URIDict(MutableMapping):

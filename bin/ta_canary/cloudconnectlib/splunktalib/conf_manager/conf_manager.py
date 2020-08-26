@@ -8,7 +8,6 @@ from . import conf_endpoints as scmc
 from . import data_input_endpoints as scmdi
 from . import property_endpoints as scmp
 from . import request as req
-import os
 
 
 def conf_file2name(conf_file):
@@ -220,7 +219,7 @@ class ConfManager(object):
     def _delete_metadata(self, stanzas, ret_metadata):
         if stanzas and not ret_metadata:
             for stanza in stanzas:
-                for key in list(stanza.keys()):
+                for key in stanza.keys():
                     if key.startswith("eai:"):
                         del stanza[key]
         return stanzas

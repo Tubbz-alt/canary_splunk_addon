@@ -22,9 +22,13 @@ import os
 import signal
 import time
 import traceback
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    from urllib2 import urlparse
+
 from functools import wraps
-from six.moves import range
 
 __all__ = ['handle_teardown_signals',
            'datetime_to_seconds',
@@ -155,7 +159,7 @@ def retry(retries=3, reraise=True, default_return=None, exceptions=None):
                     return func(*args, **kwargs)
                 except Exception as e:
                     logging.warning('Run function: %s failed: %s.',
-                                    func.__name__, traceback.format_exc(e))
+                                    func.__name__, traceback.format_exc())
                     if not exceptions or \
                             any(isinstance(e, exception) for exception in exceptions):
                         last_ex = e
@@ -186,7 +190,7 @@ def extract_http_scheme_host_port(http_url):
     '''
 
     try:
-        http_info = urllib2.urlparse.urlparse(http_url)
+        http_info = urlparse.urlparse(http_url)
     except Exception:
         raise ValueError(
             str(http_url) + " is not in http(s)://hostname:port format")

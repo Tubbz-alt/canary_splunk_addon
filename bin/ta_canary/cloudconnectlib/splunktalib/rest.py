@@ -1,4 +1,4 @@
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import urllib
 import json
 from traceback import format_exc
 
@@ -7,7 +7,6 @@ from .common import log as log
 
 
 from httplib2 import (socks, ProxyInfo, Http)
-from six.moves import range
 
 
 def splunkd_request(splunkd_uri, session_key, method="GET",
@@ -30,7 +29,7 @@ def splunkd_request(splunkd_uri, session_key, method="GET",
         if content_type == "application/json":
             data = json.dumps(data)
         else:
-            data = six.moves.urllib.parse.urlencode(data)
+            data = urllib.urlencode(data)
 
     http = Http(timeout=timeout, disable_ssl_certificate_validation=True)
     msg_temp = "Failed to send rest request=%s, errcode=%s, reason=%s"

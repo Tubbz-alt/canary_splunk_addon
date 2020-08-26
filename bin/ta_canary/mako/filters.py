@@ -95,7 +95,7 @@ class XMLEntityEscaper(object):
 
     def __init__(self, codepoint2name, name2codepoint):
         self.codepoint2entity = dict([(c, compat.text_type('&%s;' % n))
-                                      for c, n in list(codepoint2name.items())])
+                                      for c, n in codepoint2name.items()])
         self.name2codepoint = name2codepoint
 
     def escape_entities(self, text):

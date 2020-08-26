@@ -18,12 +18,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from json.encoder import encode_basestring_ascii as json_encode_string
 from collections import namedtuple
-from cStringIO import StringIO
+from ..six.moves import StringIO
 from io import open
 import csv
 import os
 import re
-import six
+from .. import six
+from ..six.moves import getcwd
 
 
 class Validator(object):
@@ -99,7 +100,7 @@ class Code(Validator):
     def format(self, value):
         return None if value is None else value.source
 
-    object = namedtuple(b'Code', (b'object', 'source'))
+    object = namedtuple('Code', ('object', 'source'))
 
 
 class Fieldname(Validator):
@@ -150,7 +151,7 @@ class File(Validator):
         return None if value is None else value.name
 
     _var_run_splunk = os.path.join(
-        os.environ['SPLUNK_HOME'] if 'SPLUNK_HOME' in os.environ else os.getcwd(), 'var', 'run', 'splunk')
+        os.environ['SPLUNK_HOME'] if 'SPLUNK_HOME' in os.environ else getcwd(), 'var', 'run', 'splunk')
 
 
 class Integer(Validator):
@@ -184,7 +185,10 @@ class Integer(Validator):
         if value is None:
             return None
         try:
-            value = long(value)
+            if six.PY2:
+                value = long(value)
+            else:
+                value = int(value)
         except ValueError:
             raise ValueError('Expected integer value, not {}'.format(json_encode_string(value)))
 
@@ -192,7 +196,7 @@ class Integer(Validator):
         return value
 
     def format(self, value):
-        return None if value is None else six.text_type(long(value))
+        return None if value is None else six.text_type(int(value))
 
 
 class Duration(Validator):

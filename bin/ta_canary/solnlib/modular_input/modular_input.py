@@ -19,9 +19,19 @@ This module provides a base class of Splunk modular input.
 import logging
 import sys
 import traceback
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+
+try:
+    from urllib3 import parse_url as urlparse
+    from urllib3.exceptions import InsecureRequestWarning
+    urllib3.disable_warnings(InsecureRequestWarning)
+except ImportError:
+    try:
+        from urllib2 import urlparse
+    except ImportError:
+        from urllib import parse as urlparse
+
 from abc import ABCMeta, abstractmethod
-import six
+from ..packages.splunklib.six import with_metaclass
 
 try:
     import xml.etree.cElementTree as ET
@@ -43,11 +53,14 @@ __all__ = ['ModularInputException',
            'ModularInput']
 
 
+SCHEME_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'utf-8'
+
+
 class ModularInputException(Exception):
     pass
 
 
-class ModularInput(six.with_metaclass(ABCMeta, object)):
+class ModularInput(with_metaclass(ABCMeta, object)):
     '''Base class of Splunk modular input.
 
     It's a base modular input, it should be inherited by sub modular input. For
@@ -189,7 +202,7 @@ class ModularInput(six.with_metaclass(ABCMeta, object)):
                     host=self.server_host, port=self.server_port)
             except binding.HTTPError as e:
                 logging.error('Failed to init kvstore checkpointer: %s.',
-                              traceback.format_exc(e))
+                              traceback.format_exc())
                 raise
         else:
             return checkpointer.FileCheckpointer(self._checkpoint_dir)
@@ -222,14 +235,14 @@ class ModularInput(six.with_metaclass(ABCMeta, object)):
                     port=self.server_port)
             except binding.HTTPError as e:
                 logging.error('Failed to init HECEventWriter: %s.',
-                              traceback.format_exc(e))
+                              traceback.format_exc())
                 raise
         else:
             return event_writer.ClassicEventWriter()
 
     def _update_metadata(self, metadata):
         self.server_host_name = metadata['server_host']
-        splunkd = urllib2.urlparse.urlsplit(metadata['server_uri'])
+        splunkd = urlparse.urlsplit(metadata['server_uri'])
         self.server_uri = splunkd.geturl()
         self.server_scheme = splunkd.scheme
         self.server_host = splunkd.hostname
@@ -259,7 +272,7 @@ class ModularInput(six.with_metaclass(ABCMeta, object)):
                          required_on_edit=required_on_edit,
                          required_on_create=required_on_create))
 
-        return ET.tostring(scheme.to_xml())
+        return ET.tostring(scheme.to_xml(), encoding=SCHEME_ENCODING)
 
     def extra_arguments(self):
         '''Extra arguments for modular input.
@@ -429,7 +442,7 @@ class ModularInput(six.with_metaclass(ABCMeta, object)):
                 return 0
             except Exception as e:
                 logging.error('Modular input: %s exit with exception: %s.',
-                              self.name, traceback.format_exc(e))
+                              self.name, traceback.format_exc())
                 return 1
             finally:
                 # Stop orphan monitor if any
@@ -450,7 +463,7 @@ class ModularInput(six.with_metaclass(ABCMeta, object)):
             except Exception as e:
                 logging.error(
                     'Modular input: %s validate arguments with exception: %s.',
-                    self.name, traceback.format_exc(e))
+                    self.name, traceback.format_exc())
                 root = ET.Element('error')
                 ET.SubElement(root, 'message').text = str(e)
                 sys.stderr.write(ET.tostring(root))

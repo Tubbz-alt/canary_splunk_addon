@@ -1,7 +1,6 @@
 import json
 from ..splunktalib.common import util
 from solnlib.modular_input.event import XMLEvent
-from io import open
 
 
 def is_valid_bool(val):

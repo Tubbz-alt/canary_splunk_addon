@@ -3,7 +3,7 @@ A timer queue implementation
 """
 
 import threading
-import six.moves.queue
+import Queue
 from time import time
 import traceback
 
@@ -22,7 +22,7 @@ class TimerQueue(object):
         self._timers = TimerQueue.sc.SortedSet()
         self._cancelling_timers = {}
         self._lock = threading.Lock()
-        self._wakeup_queue = six.moves.queue.Queue()
+        self._wakeup_queue = Queue.Queue()
         self._thr = threading.Thread(target=self._check_and_execute)
         self._started = False
 
@@ -72,7 +72,7 @@ class TimerQueue(object):
 
     def _check_and_execute(self):
         wakeup_queue = self._wakeup_queue
-        while True:
+        while 1:
             (next_expired_time, expired_timers) = self._get_expired_timers()
             for timer in expired_timers:
                 try:
@@ -96,7 +96,7 @@ class TimerQueue(object):
                 wakeup = wakeup_queue.get(timeout=sleep_time)
                 if wakeup is None:
                     break
-            except six.moves.queue.Empty:
+            except Queue.Empty:
                 pass
         log.logger.info("TimerQueue stopped.")
 

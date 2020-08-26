@@ -19,7 +19,6 @@ Orphan process monitor.
 import os
 import threading
 import time
-from six.moves import range
 
 __all__ = ['OrphanProcessChecker',
            'OrphanProcessMonitor']

@@ -19,7 +19,6 @@ from jinja2.utils import Markup, escape, pformat, urlize, soft_unicode, \
 from jinja2.runtime import Undefined
 from jinja2.exceptions import FilterArgumentError
 from jinja2._compat import imap, string_types, text_type, iteritems
-from six.moves import range
 
 
 _word_re = re.compile(r'\w+(?u)')
@@ -221,7 +220,7 @@ def do_dictsort(value, case_sensitive=False, by='key'):
             value = value.lower()
         return value
 
-    return sorted(list(value.items()), key=sort_func)
+    return sorted(value.items(), key=sort_func)
 
 
 @environmentfilter
@@ -312,11 +311,11 @@ def do_join(eval_ctx, value, d=u'', attribute=None):
        The `attribute` parameter was added.
     """
     if attribute is not None:
-        value = map(make_attrgetter(eval_ctx.environment, attribute), value)
+        value = imap(make_attrgetter(eval_ctx.environment, attribute), value)
 
     # no automatic escaping?  joining is a lot eaiser then
     if not eval_ctx.autoescape:
-        return text_type(d).join(map(text_type, value))
+        return text_type(d).join(imap(text_type, value))
 
     # if the delimiter doesn't have an html representation we check
     # if any of the items has.  If yes we do a coercion to Markup
@@ -335,7 +334,7 @@ def do_join(eval_ctx, value, d=u'', attribute=None):
         return d.join(value)
 
     # no html involved, to normal joining
-    return soft_unicode(d).join(map(soft_unicode, value))
+    return soft_unicode(d).join(imap(soft_unicode, value))
 
 
 def do_center(value, width=80):
@@ -740,7 +739,7 @@ def do_sum(environment, iterable, attribute=None, start=0):
        attributes.  Also the `start` parameter was moved on to the right.
     """
     if attribute is not None:
-        iterable = map(make_attrgetter(environment, attribute), iterable)
+        iterable = imap(make_attrgetter(environment, attribute), iterable)
     return sum(iterable, start)
 
 

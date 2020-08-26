@@ -4,15 +4,13 @@ import unicodedata
 import re
 import sys
 from .intranges import intranges_contain
-import six
-from six.moves import range
 
 _virama_combining_class = 9
 _alabel_prefix = b'xn--'
 _unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
 
 if sys.version_info[0] == 3:
-    six.text_type = str
+    unicode = str
     unichr = chr
 
 class IDNAError(UnicodeError):
@@ -274,7 +272,7 @@ def alabel(label):
     if not label:
         raise IDNAError('No Input')
 
-    label = six.text_type(label)
+    label = unicode(label)
     check_label(label)
     label = _punycode(label)
     label = _alabel_prefix + label

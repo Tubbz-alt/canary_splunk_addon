@@ -4,7 +4,6 @@ from lingua.extractors import Message
 from lingua.extractors import get_extractor
 from mako.ext.extract import MessageExtractor
 from mako import compat
-from io import open
 
 
 class LinguaMakoExtractor(Extractor, MessageExtractor):

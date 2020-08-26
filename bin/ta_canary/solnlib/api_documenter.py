@@ -100,9 +100,7 @@ import re
 import tempfile
 
 from . import splunk_rest_client as rest
-from .packages import simpleyaml as yaml
-from io import open
-from six.moves import zip
+from .packages import yaml
 
 __all__ = ['api',
            'api_model',
@@ -135,7 +133,7 @@ def api_model(is_model_class_used, req=None, ref=None, obj=None):
         if not spec.paths:
             return cls
         if is_model_class_used:
-            params = list(vars(cls).items())
+            params = vars(cls).items()
             definition = {}
             # FixMe: (later) No need to replace.
             name = cls.__name__.replace("Model", "")
@@ -354,7 +352,7 @@ def api():
                     'api',
                     'id',
                     'action']
-                path_params = dict(list(zip(path_keys, args[2]['path'].split('/'))))
+                path_params = dict(zip(path_keys, args[2]['path'].split('/')))
                 app = path_params.get('app')
                 version = path_params.get('version')
                 api_name = path_params.get('api')
@@ -388,7 +386,7 @@ def api_get_spec(context, method_list):
     _generate_documentation(context, method_list)
     with open(tempfile.gettempdir() + op.sep + 'spec.yaml') as stream:
         try:
-            spec_file = yaml.load(stream)
+            spec_file = yaml.safe_load(stream)
         except yaml.YAMLError as ex:
             raise Exception("Please try again. Exception: {}".format(ex))
         return json.dumps(spec_file)
@@ -477,7 +475,7 @@ class _SwaggerApi(object):
             with open(tempfile.gettempdir() + op.sep + 'temp.yaml', "r")\
                     as stream:
                 try:
-                    spec = yaml.load(stream)
+                    spec = yaml.safe_load(stream)
                     self.swagger = spec["swagger"]
                     self.info = spec["info"]
                     self.host = spec["host"]
@@ -539,8 +537,8 @@ class _SwaggerApi(object):
         :return: api path
         :rtype: ```basestring```
         '''
-        if self.paths and list(self.paths.keys()) and len(list(self.paths.keys())) > 0:
-            return list(self.paths.keys())[0]
+        if self.paths and self.paths.keys() and len(self.paths.keys()) > 0:
+            return self.paths.keys()[0]
 
     def set_title(self, title):
         '''

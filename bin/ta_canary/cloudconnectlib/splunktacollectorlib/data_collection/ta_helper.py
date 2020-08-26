@@ -10,8 +10,6 @@ from splunktaucclib.global_config import GlobalConfig, GlobalConfigSchema
 from . import ta_consts as c
 from ...splunktacollectorlib import config as sc
 from ...splunktalib.common import util
-import six
-import os
 
 
 def utc2timestamp(human_time):
@@ -41,7 +39,7 @@ def get_md5(data):
     :return:
     """
     assert data is not None, "The input cannot be None"
-    if isinstance(data, (six.text_type, str)):
+    if isinstance(data, (unicode, str)):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
     elif isinstance(data, (list, tuple, dict)):
         return hashlib.sha256(json.dumps(data).encode('utf-8')).hexdigest()
@@ -100,7 +98,7 @@ class ConfigSchemaHandler(object):
     def _divide_settings(self):
         division_schema = self._client_schema[c.division]
         division_settings = dict()
-        for division_endpoint, division_contents in division_schema.items():
+        for division_endpoint, division_contents in division_schema.iteritems():
             division_settings[division_endpoint] = self._process_division(
                 division_endpoint, division_contents)
         return division_settings
@@ -111,7 +109,7 @@ class ConfigSchemaHandler(object):
     def _process_division(self, division_endpoint, division_contents):
         division_metrics = []
         assert isinstance(division_contents, dict)
-        for division_key, division_value in division_contents.items():
+        for division_key, division_value in division_contents.iteritems():
             try:
                 assert self.TYPE in division_value and \
                        division_value[self.TYPE] in \

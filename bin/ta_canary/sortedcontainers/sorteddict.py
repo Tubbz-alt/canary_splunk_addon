@@ -412,7 +412,7 @@ class KeysView(AbstractKeysView, Set, Sequence):
             """
             # pylint: disable=super-init-not-called, protected-access
             self._list = sorted_dict._list
-            self._view = sorted_dict._dict.keys()
+            self._view = sorted_dict._dict.viewkeys()
     else:
         def __init__(self, sorted_dict):
             """
@@ -420,7 +420,7 @@ class KeysView(AbstractKeysView, Set, Sequence):
             """
             # pylint: disable=super-init-not-called, protected-access
             self._list = sorted_dict._list
-            self._view = list(sorted_dict._dict.keys())
+            self._view = sorted_dict._dict.keys()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._view)
@@ -523,7 +523,7 @@ class ValuesView(AbstractValuesView, Sequence):
             # pylint: disable=super-init-not-called, protected-access
             self._dict = sorted_dict
             self._list = sorted_dict._list
-            self._view = sorted_dict._dict.values()
+            self._view = sorted_dict._dict.viewvalues()
     else:
         def __init__(self, sorted_dict):
             """
@@ -533,7 +533,7 @@ class ValuesView(AbstractValuesView, Sequence):
             # pylint: disable=super-init-not-called, protected-access
             self._dict = sorted_dict
             self._list = sorted_dict._list
-            self._view = list(sorted_dict._dict.values())
+            self._view = sorted_dict._dict.values()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._dict)
@@ -587,11 +587,11 @@ class ValuesView(AbstractValuesView, Sequence):
     if hexversion < 0x03000000:
         def count(self, value):
             """Return the number of occurrences of *value* in self."""
-            return sum(1 for val in self._dict.values() if val == value)
+            return sum(1 for val in self._dict.itervalues() if val == value)
     else:
         def count(self, value):
             """Return the number of occurrences of *value* in self."""
-            return sum(1 for val in list(self._dict.values()) if val == value)
+            return sum(1 for val in self._dict.values() if val == value)
     def __lt__(self, that):
         raise TypeError
     def __gt__(self, that):
@@ -632,7 +632,7 @@ class ItemsView(AbstractItemsView, Set, Sequence):
             # pylint: disable=super-init-not-called, protected-access
             self._dict = sorted_dict
             self._list = sorted_dict._list
-            self._view = sorted_dict._dict.items()
+            self._view = sorted_dict._dict.viewitems()
     else:
         def __init__(self, sorted_dict):
             """
@@ -642,7 +642,7 @@ class ItemsView(AbstractItemsView, Set, Sequence):
             # pylint: disable=super-init-not-called, protected-access
             self._dict = sorted_dict
             self._list = sorted_dict._list
-            self._view = list(sorted_dict._dict.items())
+            self._view = sorted_dict._dict.items()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._view)

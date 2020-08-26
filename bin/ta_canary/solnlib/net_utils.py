@@ -22,7 +22,6 @@ import socket
 from functools import wraps
 
 from . import ip_math
-from six.moves import zip
 
 __all__ = ['resolve_hostname']
 
@@ -71,7 +70,7 @@ def is_valid_hostname(hostname):
         return False
     if hostname[-1:] == '.':
         hostname = hostname[:-1]
-    allowed = re.compile('(?!-)[A-Z\d-]{1,63}(?<!-)$', re.IGNORECASE)
+    allowed = re.compile('(?!-)(::)?[A-Z\d-]{1,63}(?<!-)$', re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split('.'))
 
 
@@ -119,7 +118,7 @@ def check_css_params(**validators):
             dfs = arg_spec.defaults
             optional = dict(list(zip(arg_spec.args[-len(dfs):], dfs))) if dfs else {}
 
-            for arg, func in validators.items():
+            for arg, func in list(validators.items()):
                 if arg not in actual_args:
                     continue
                 value = actual_args[arg]

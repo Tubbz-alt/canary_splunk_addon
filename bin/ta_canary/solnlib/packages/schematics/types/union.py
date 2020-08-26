@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals, absolute_import
+
 import inspect
+from collections import OrderedDict
 
 from ..common import *
-from ..datastructures import OrderedDict
 from ..exceptions import ConversionError
+from ..translator import _
 from ..transforms import get_import_context, get_export_context
 from .base import BaseType
+
+__all__ = ['UnionType']
 
 
 def _valid_init_args(type_):
@@ -16,7 +23,7 @@ def _valid_init_args(type_):
     return args
 
 def _filter_kwargs(valid_args, kwargs):
-    return dict((k, v) for k, v in list(kwargs.items()) if k in valid_args)
+    return dict((k, v) for k, v in kwargs.items() if k in valid_args)
 
 
 class UnionType(BaseType):
@@ -24,7 +31,7 @@ class UnionType(BaseType):
     types = None
 
     MESSAGES = {
-        'convert': "Couldn't interpret value '{0}' as any of {1}.",
+        'convert': _("Couldn't interpret value '{0}' as any of {1}."),
     }
 
     _baseclass_args = _valid_init_args(BaseType)
@@ -47,7 +54,7 @@ class UnionType(BaseType):
         super(UnionType, self).__init__(**_filter_kwargs(self._baseclass_args, kwargs))
 
     def resolve(self, value, context):
-        for field in list(self._types.values()):
+        for field in self._types.values():
             try:
                 value = field.convert(value, context)
             except ConversionError:
@@ -90,4 +97,6 @@ class UnionType(BaseType):
         return field.to_primitive(value, context)
 
 
-__all__ = module_exports(__name__)
+if PY2:
+    # Python 2 names cannot be unicode
+    __all__ = [n.encode('ascii') for n in __all__]

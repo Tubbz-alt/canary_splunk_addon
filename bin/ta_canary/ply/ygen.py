@@ -1,4 +1,3 @@
-from __future__ import print_function
 # ply: ygen.py
 #
 # This is a support program that auto-generates different versions of the YACC parsing
@@ -10,7 +9,6 @@ from __future__ import print_function
 
 import os.path
 import shutil
-from io import open
 
 def get_source_range(lines, tag):
     srclines = enumerate(lines)

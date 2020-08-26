@@ -16,7 +16,6 @@ from ..core.models import (
     Condition, Task, Checkpoint, IterationMode,
     DictToken
 )
-import six
 
 _logger = get_cc_logger()
 
@@ -64,8 +63,8 @@ class CloudConnectConfigLoaderV1(CloudConnectConfigLoader):
     def _render_from_dict(source, ctx):
         rendered = DictToken(source).render(ctx)
 
-        return dict((k, v.strip() if isinstance(v, six.string_types) else v)
-                    for k, v in rendered.items())
+        return dict((k, v.strip() if isinstance(v, basestring) else v)
+                    for k, v in rendered.iteritems())
 
     def _load_proxy(self, candidate, variables):
         """
@@ -125,7 +124,7 @@ class CloudConnectConfigLoaderV1(CloudConnectConfigLoader):
         if level_name:
             level_name = level_name.upper().strip()
 
-            for k, v in _LOGGING_LEVELS.items():
+            for k, v in _LOGGING_LEVELS.iteritems():
                 if k.startswith(level_name):
                     return v
 
@@ -165,7 +164,7 @@ class CloudConnectConfigLoaderV1(CloudConnectConfigLoader):
         if auth_type not in _AUTH_TYPES:
             raise ValueError(
                 'Auth type expect to be one of [{}]: {}'.format(
-                    ','.join(list(_AUTH_TYPES.keys())), auth_type)
+                    ','.join(_AUTH_TYPES.keys()), auth_type)
             )
         return _AUTH_TYPES[auth_type](candidate['options'])
 

@@ -10,7 +10,6 @@ import codecs
 import os
 from mako import compat
 import operator
-from io import open
 
 
 def update_wrapper(decorated, fn):
@@ -281,7 +280,8 @@ def sorted_dict_repr(d):
     Used by the lexer unit test to compare parse trees based on strings.
 
     """
-    keys = sorted(d.keys())
+    keys = list(d.keys())
+    keys.sort()
     return "{" + ", ".join(["%r: %r" % (k, d[k]) for k in keys]) + "}"
 
 

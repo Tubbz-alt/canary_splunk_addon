@@ -16,11 +16,10 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-
+from ..six.moves import map as imap
 
 from .decorators import ConfigurationSetting
 from .search_command import SearchCommand
-from six.moves import map
 
 
 class EventingCommand(SearchCommand):
@@ -114,10 +113,10 @@ class EventingCommand(SearchCommand):
 
             ''')
 
-        type = ConfigurationSetting(readonly=True, value='eventing', doc='''
+        type = ConfigurationSetting(readonly=True, value='events', doc='''
             Command type
 
-            Fixed: :const:`'eventing'`.
+            Fixed: :const:`'events'`.
 
             Supported by: SCP 2
 
@@ -138,6 +137,6 @@ class EventingCommand(SearchCommand):
 
         def iteritems(self):
             iteritems = SearchCommand.ConfigurationSettings.iteritems(self)
-            return map(lambda name_value: (name_value[0], 'events' if name_value[0] == 'type' else name_value[1]), iteritems)
+            return imap(lambda name_value: (name_value[0], 'events' if name_value[0] == 'type' else name_value[1]), iteritems)
 
         # endregion

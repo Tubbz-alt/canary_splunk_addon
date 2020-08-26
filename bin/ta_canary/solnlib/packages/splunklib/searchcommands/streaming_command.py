@@ -16,12 +16,10 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-
+from ..six.moves import map as imap, filter as ifilter
 
 from .decorators import ConfigurationSetting
 from .search_command import SearchCommand
-from six.moves import filter
-from six.moves import map
 
 
 class StreamingCommand(SearchCommand):
@@ -179,11 +177,11 @@ class StreamingCommand(SearchCommand):
             version = self.command.protocol_version
             if version == 1:
                 if self.required_fields is None:
-                    iteritems = filter(lambda name_value: name_value[0] != 'clear_required_fields', iteritems)
+                    iteritems = ifilter(lambda name_value: name_value[0] != 'clear_required_fields', iteritems)
             else:
-                iteritems = filter(lambda name_value2: name_value2[0] != 'distributed', iteritems)
-                if self.distributed:
-                    iteritems = map(
+                iteritems = ifilter(lambda name_value2: name_value2[0] != 'distributed', iteritems)
+                if not self.distributed:
+                    iteritems = imap(
                         lambda name_value1: (name_value1[0], 'stateful') if name_value1[0] == 'type' else (name_value1[0], name_value1[1]), iteritems)
             return iteritems
 

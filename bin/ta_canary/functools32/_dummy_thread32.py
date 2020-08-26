@@ -46,9 +46,9 @@ def start_new_thread(function, args, kwargs={}):
     raised when the function returns.
 
     """
-    if not isinstance(args, type(tuple())):
+    if type(args) != type(tuple()):
         raise TypeError("2nd arg must be a tuple")
-    if not isinstance(kwargs, type(dict())):
+    if type(kwargs) != type(dict()):
         raise TypeError("3rd arg must be a dict")
     global _main
     _main = False

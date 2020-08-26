@@ -11,7 +11,6 @@ Python 3.
 from .packages import chardet
 
 import sys
-import six
 
 # -------
 # Pythons
@@ -38,20 +37,20 @@ except (ImportError, SyntaxError):
 # ---------
 
 if is_py2:
-    from six.moves.urllib.parse import quote, unquote, quote_plus, unquote_plus, urlencode
-    from six.moves.urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
+    from urllib import quote, unquote, quote_plus, unquote_plus, urlencode, getproxies, proxy_bypass
+    from urlparse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
     from urllib2 import parse_http_list
-    import six.moves.http_cookiejar
-    from six.moves.http_cookies import Morsel
+    import cookielib
+    from Cookie import Morsel
     from StringIO import StringIO
     from .packages.urllib3.packages.ordered_dict import OrderedDict
 
     builtin_str = str
     bytes = str
-    str = six.text_type
-    six.string_types = six.string_types
+    str = unicode
+    basestring = basestring
     numeric_types = (int, long, float)
-    integer_types = six.integer_types
+    integer_types = (int, long)
 
 elif is_py3:
     from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote, quote_plus, unquote_plus, urldefrag
@@ -64,6 +63,6 @@ elif is_py3:
     builtin_str = str
     str = str
     bytes = bytes
-    six.string_types = (str, bytes)
+    basestring = (str, bytes)
     numeric_types = (int, float)
     integer_types = (int,)

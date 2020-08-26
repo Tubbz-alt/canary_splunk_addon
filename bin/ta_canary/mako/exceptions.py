@@ -9,8 +9,6 @@
 import traceback
 import sys
 from mako import util, compat
-from io import open
-from six.moves import range
 
 
 class MakoException(Exception):

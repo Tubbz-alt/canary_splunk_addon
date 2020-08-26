@@ -1,4 +1,3 @@
-from six.moves import zip
 # Copyright 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -15,6 +14,8 @@ from six.moves import zip
 
 # File for utility functions
 
+from __future__ import absolute_import
+from ..six.moves import zip
 def xml_compare(expected, found):
     """Checks equality of two ``ElementTree`` objects.
 

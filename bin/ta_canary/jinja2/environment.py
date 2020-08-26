@@ -31,7 +31,6 @@ from jinja2._compat import imap, ifilter, string_types, iteritems, \
      text_type, reraise, implements_iterator, implements_to_string, \
      get_next, encode_filename, PY2, PYPY
 from functools import reduce
-from io import open
 
 
 # for direct template usage we have up to ten living environments
@@ -71,7 +70,7 @@ def copy_cache(cache):
     """Create an empty copy of the given cache."""
     if cache is None:
         return None
-    elif isinstance(cache, dict):
+    elif type(cache) is dict:
         return {}
     return LRUCache(cache.capacity)
 
@@ -381,7 +380,7 @@ class Environment(object):
 
     def iter_extensions(self):
         """Iterates over the extensions by priority."""
-        return iter(sorted(list(self.extensions.values()),
+        return iter(sorted(self.extensions.values(),
                            key=lambda x: x.priority))
 
     def getitem(self, obj, argument):
@@ -729,7 +728,7 @@ class Environment(object):
             filter_func = lambda x: '.' in x and \
                                     x.rsplit('.', 1)[1] in extensions
         if filter_func is not None:
-            x = list(filter(filter_func, x))
+            x = list(ifilter(filter_func, x))
         return x
 
     def handle_exception(self, exc_info=None, rendered=False, source_hint=None):
@@ -1069,7 +1068,7 @@ class Template(object):
     @property
     def debug_info(self):
         """The debug info mapping."""
-        return [tuple(map(int, x.split('='))) for x in
+        return [tuple(imap(int, x.split('='))) for x in
                 self._debug_info.split('&')]
 
     def __repr__(self):
@@ -1185,7 +1184,7 @@ class TemplateStream(object):
             c_size = 0
             push = buf.append
 
-            while True:
+            while 1:
                 try:
                     while c_size < size:
                         c = next()

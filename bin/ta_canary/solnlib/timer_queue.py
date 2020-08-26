@@ -16,7 +16,11 @@
 A simple thread safe timer queue implementation which has O(logn) time complexity.
 '''
 
-import six.moves.queue
+try:
+    import queue as Queue
+except ImportError:
+    import Queue
+
 import logging
 import threading
 import traceback
@@ -61,22 +65,23 @@ class Timer(object):
     def update_expiration(self):
         self.when += self.interval
 
-    def __cmp__(self, other):
-        if other is None:
-            return 1
-
-        self_k = (self.when, self.ident)
-        other_k = (other.when, other.ident)
-
-        if self_k == other_k:
-            return 0
-        elif self_k < other_k:
-            return -1
-        else:
-            return 1
+    def __hash__(self):
+        return hash(self.ident)
 
     def __eq__(self, other):
         return isinstance(other, Timer) and (self.ident == other.ident)
+
+    def __lt__(self, other):
+        return (self.when, self.ident) < (other.when, other.ident)
+
+    def __le__(self, other):
+        return (self.when, self.ident) <= (other.when, other.ident)
+
+    def __gt__(self, other):
+        return (self.when, self.ident) > (other.when, other.ident)
+
+    def __ge__(self, other):
+        return (self.when, self.ident) >= (other.when, other.ident)
 
     def __call__(self):
         self._callback()
@@ -219,7 +224,7 @@ class TimerQueue(object):
     def __init__(self):
         self._timers = TimerQueueStruct()
         self._lock = threading.Lock()
-        self._wakeup_queue = six.moves.queue.Queue()
+        self._wakeup_queue = Queue.Queue()
         self._thr = threading.Thread(target=self._check_and_execute)
         self._thr.daemon = True
         self._started = False
@@ -279,7 +284,7 @@ class TimerQueue(object):
 
     def _check_and_execute(self):
         wakeup_queue = self._wakeup_queue
-        while True:
+        while 1:
             (next_expired_time, expired_timers) = self._get_expired_timers()
             for timer in expired_timers:
                 try:
@@ -295,7 +300,7 @@ class TimerQueue(object):
                 wakeup = wakeup_queue.get(timeout=sleep_time)
                 if wakeup is TEARDOWN_SENTINEL:
                     break
-            except six.moves.queue.Empty:
+            except Queue.Empty:
                 pass
         logging.info('TimerQueue stopped.')
 

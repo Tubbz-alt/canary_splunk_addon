@@ -20,8 +20,15 @@ import os
 import os.path as op
 import subprocess
 import socket
-from six.moves.configparser import ConfigParser
-from cStringIO import StringIO
+
+try:
+    from ConfigParser import ConfigParser
+    CONF_PARSER_KWARGS = {}
+except ImportError:
+    from configparser import ConfigParser
+    CONF_PARSER_KWARGS = { 'strict': False }
+
+from io import StringIO
 
 from . import utils
 
@@ -258,19 +265,21 @@ def get_conf_stanzas(conf_name):
         conf_name = conf_name[:-5]
 
     # TODO: dynamically caculate SPLUNK_HOME
-    btool_cli = [op.join(os.environ['SPLUNK_HOME'], 'bin', 'btool'),
-                 conf_name, 'list']
+    btool_cli = [op.join(os.environ['SPLUNK_HOME'], 'bin', 'splunk'), 
+                'cmd', 'btool', conf_name, 'list']
     p = subprocess.Popen(btool_cli,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     out, _ = p.communicate()
 
-    out = StringIO(out)
-    parser = ConfigParser()
+    if isinstance(out, bytes):
+        out = out.decode()
+
+    parser = ConfigParser(**CONF_PARSER_KWARGS)
     parser.optionxform = str
-    parser.readfp(out)
+    parser.readfp(StringIO(out))
 
     out = {}
     for section in parser.sections():
-        out[section] = {item[0]: item[1] for item in parser.items(section)}
+        out[section] = {item[0]: item[1] for item in parser.items(section, raw=True)}
     return out

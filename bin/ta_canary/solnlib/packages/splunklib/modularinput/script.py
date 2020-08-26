@@ -12,15 +12,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
-from six.moves.urllib.parse import urlsplit
+from ..six.moves.urllib.parse import urlsplit
 import sys
 
 from ..client import Service
 from .event_writer import EventWriter
 from .input_definition import InputDefinition
 from .validation_definition import ValidationDefinition
-import six
+from .. import six
 
 try:
     import xml.etree.cElementTree as ET
@@ -101,9 +102,10 @@ class Script(six.with_metaclass(ABCMeta, object)):
                 err_string = "ERROR Invalid arguments to modular input script:" + ' '.join(
                     args)
                 event_writer._err.write(err_string)
+                return 1
 
         except Exception as e:
-            err_string = EventWriter.ERROR + str(e.message)
+            err_string = EventWriter.ERROR + str(e)
             event_writer._err.write(err_string)
             return 1
 

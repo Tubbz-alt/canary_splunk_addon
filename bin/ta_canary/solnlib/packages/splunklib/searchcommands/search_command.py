@@ -18,31 +18,31 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # Absolute imports
 
-from ..client import Service
-
-
 from collections import namedtuple
-from six.moves import filter
-from six.moves import map
-from six.moves import zip
-from io import open
-import six
+
+import io
+
 try:
     from collections import OrderedDict  # must be python 2.7
 except ImportError:
     from ..ordereddict import OrderedDict
 from copy import deepcopy
-from cStringIO import StringIO
+from ..six.moves import StringIO
 from itertools import chain, islice
-from logging import _levelNames, getLevelName, getLogger
+from ..six.moves import filter as ifilter, map as imap, zip as izip
+from .. import six
+if six.PY2:
+    from logging import _levelNames, getLevelName, getLogger
+else:
+    from logging import _nameToLevel as _levelNames, getLevelName, getLogger
 try:
     from shutil import make_archive
 except ImportError:
     # Used for recording, skip on python 2.6
     pass
 from time import time
-from six.moves.urllib.parse import unquote
-from six.moves.urllib.parse import urlsplit
+from ..six.moves.urllib.parse import unquote
+from ..six.moves.urllib.parse import urlsplit
 from warnings import warn
 from xml.etree import ElementTree
 
@@ -55,7 +55,7 @@ import traceback
 
 # Relative imports
 
-from . internals import (
+from .internals import (
     CommandLineParser,
     CsvDialect,
     InputHeader,
@@ -69,6 +69,8 @@ from . internals import (
     json_encode_string)
 
 from . import Boolean, Option, environment
+from ..client import Service
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -96,6 +98,7 @@ class SearchCommand(object):
     """ Represents a custom search command.
 
     """
+
     def __init__(self):
 
         # Variables that may be used, but not altered by derived classes
@@ -276,7 +279,7 @@ class SearchCommand(object):
             path = os.path.join(dispatch_dir, 'info.csv')
 
         try:
-            with open(path, 'rb') as f:
+            with io.open(path, 'r') as f:
                 reader = csv.reader(f, dialect=CsvDialect)
                 fields = next(reader)
                 values = next(reader)
@@ -297,7 +300,7 @@ class SearchCommand(object):
             except ValueError:
                 return value
 
-        info = ObjectView(dict(map(lambda f_v: (convert_field(f_v[0]), convert_value(f_v[1])), zip(fields, values))))
+        info = ObjectView(dict(imap(lambda f_v: (convert_field(f_v[0]), convert_value(f_v[1])), izip(fields, values))))
 
         try:
             count_map = info.countMap
@@ -306,7 +309,7 @@ class SearchCommand(object):
         else:
             count_map = count_map.split(';')
             n = len(count_map)
-            info.countMap = dict(zip(islice(count_map, 0, n, 2), islice(count_map, 1, n, 2)))
+            info.countMap = dict(izip(islice(count_map, 0, n, 2), islice(count_map, 1, n, 2)))
 
         try:
             msg_type = info.msgType
@@ -314,7 +317,7 @@ class SearchCommand(object):
         except AttributeError:
             pass
         else:
-            messages = filter(lambda t_m: t_m[0] or t_m[1], zip(msg_type.split('\n'), msg_text.split('\n')))
+            messages = ifilter(lambda t_m: t_m[0] or t_m[1], izip(msg_type.split('\n'), msg_text.split('\n')))
             info.msg = [Message(message) for message in messages]
             del info.msgType
 
@@ -450,7 +453,7 @@ class SearchCommand(object):
         def _map(metadata_map):
             metadata = {}
 
-            for name, value in metadata_map.items():
+            for name, value in six.iteritems(metadata_map):
                 if isinstance(value, dict):
                     value = _map(value)
                 else:
@@ -500,7 +503,7 @@ class SearchCommand(object):
             'username':
                 (lambda v: v.ppc_user, lambda s: s.search_results_info)}}
 
-    _MetadataSource = namedtuple(b'Source', (b'argv', b'input_header', b'search_results_info'))
+    _MetadataSource = namedtuple('Source', ('argv', 'input_header', 'search_results_info'))
 
     def _prepare_protocol_v1(self, argv, ifile, ofile):
 
@@ -587,7 +590,7 @@ class SearchCommand(object):
 
                 ifile = self._prepare_protocol_v1(argv, ifile, ofile)
                 self._record_writer.write_record(dict(
-                    (n, ','.join(v) if isinstance(v, (list, tuple)) else v) for n, v in self._configuration.items()))
+                    (n, ','.join(v) if isinstance(v, (list, tuple)) else v) for n, v in six.iteritems(self._configuration)))
                 self.finish()
 
             elif argv[1] == '__EXECUTE__':
@@ -689,7 +692,7 @@ class SearchCommand(object):
         # Write search command configuration for consumption by splunkd
         # noinspection PyBroadException
         try:
-            self._record_writer = RecordWriterV2(ofile, getattr(self._metadata, 'maxresultrows', None))
+            self._record_writer = RecordWriterV2(ofile, getattr(self._metadata.searchinfo, 'maxresultrows', None))
             self.fieldnames = []
             self.options.reset()
 
@@ -698,13 +701,14 @@ class SearchCommand(object):
 
             debug('Parsing arguments')
 
-            if args and isinstance(args, list):
+            if args and type(args) == list:
                 for arg in args:
                     result = arg.split('=', 1)
                     if len(result) == 1:
-                        self.fieldnames.append(result[0])
+                        self.fieldnames.append(str(result[0]))
                     else:
                         name, value = result
+                        name = str(name)
                         try:
                             option = self.options[name]
                         except KeyError:
@@ -846,7 +850,6 @@ class SearchCommand(object):
 
     @staticmethod
     def _read_chunk(ifile):
-
         # noinspection PyBroadException
         try:
             header = ifile.readline()
@@ -880,8 +883,10 @@ class SearchCommand(object):
         # if body_length <= 0:
         #     return metadata, ''
 
+        body = ""
         try:
-            body = ifile.read(body_length)
+            if body_length > 0:
+                body = ifile.read(body_length)
         except Exception as error:
             raise RuntimeError('Failed to read body of length {}: {}'.format(body_length, error))
 
@@ -902,12 +907,12 @@ class SearchCommand(object):
 
         if len(mv_fieldnames) == 0:
             for values in reader:
-                yield OrderedDict(zip(fieldnames, values))
+                yield OrderedDict(izip(fieldnames, values))
             return
 
         for values in reader:
             record = OrderedDict()
-            for fieldname, value in zip(fieldnames, values):
+            for fieldname, value in izip(fieldnames, values):
                 if fieldname.startswith('__mv_'):
                     if len(value) > 0:
                         record[mv_fieldnames[fieldname]] = self._decode_list(value)
@@ -944,11 +949,11 @@ class SearchCommand(object):
 
                 if len(mv_fieldnames) == 0:
                     for values in reader:
-                        yield OrderedDict(zip(fieldnames, values))
+                        yield OrderedDict(izip(fieldnames, values))
                 else:
                     for values in reader:
                         record = OrderedDict()
-                        for fieldname, value in zip(fieldnames, values):
+                        for fieldname, value in izip(fieldnames, values):
                             if fieldname.startswith('__mv_'):
                                 if len(value) > 0:
                                     record[mv_fieldnames[fieldname]] = self._decode_list(value)
@@ -997,7 +1002,7 @@ class SearchCommand(object):
 
             """
             definitions = type(self).configuration_setting_definitions
-            settings = map(
+            settings = imap(
                 lambda setting: repr((setting.name, setting.__get__(self), setting.supporting_protocols)), definitions)
             return '[' + ', '.join(settings) + ']'
 
@@ -1010,7 +1015,8 @@ class SearchCommand(object):
             :return: String representation of this instance
 
             """
-            text = ', '.join(map(lambda name_value: name_value[0] + '=' + json_encode_string(six.text_type(name_value[1])), iter(self.items())))
+            #text = ', '.join(imap(lambda (name, value): name + '=' + json_encode_string(unicode(value)), self.iteritems()))
+            text = ', '.join(['{}={}'.format(name, json_encode_string(six.text_type(value))) for (name, value) in six.iteritems(self)])
             return text
 
         # region Methods
@@ -1032,17 +1038,19 @@ class SearchCommand(object):
         def iteritems(self):
             definitions = type(self).configuration_setting_definitions
             version = self.command.protocol_version
-            return filter(
-                lambda name_value1: name_value1[1] is not None, map(
-                    lambda setting: (setting.name, setting.__get__(self)), filter(
+            return ifilter(
+                lambda name_value1: name_value1[1] is not None, imap(
+                    lambda setting: (setting.name, setting.__get__(self)), ifilter(
                         lambda setting: setting.is_supported_by_protocol(version), definitions)))
+
+        items = iteritems
 
         pass  # endregion
 
     pass  # endregion
 
 
-SearchMetric = namedtuple(b'SearchMetric', (b'elapsed_seconds', b'invocation_count', b'input_count', b'output_count'))
+SearchMetric = namedtuple('SearchMetric', ('elapsed_seconds', 'invocation_count', 'input_count', 'output_count'))
 
 
 def dispatch(command_class, argv=sys.argv, input_file=sys.stdin, output_file=sys.stdout, module_name=None):

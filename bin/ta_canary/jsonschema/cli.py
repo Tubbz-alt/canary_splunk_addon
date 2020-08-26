@@ -5,7 +5,6 @@ import sys
 
 from jsonschema._reflect import namedAny
 from jsonschema.validators import validator_for
-from io import open
 
 
 def _namedAnyWithDefault(name):

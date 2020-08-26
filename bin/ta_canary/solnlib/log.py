@@ -21,10 +21,9 @@ import logging.handlers
 import os.path as op
 from threading import Lock
 
+from .packages.splunklib.six import with_metaclass
 from .pattern import Singleton
 from .splunkenv import make_splunkhome_path
-import six
-import os
 
 __all__ = ['log_enter_exit',
            'LogException',
@@ -62,7 +61,7 @@ class LogException(Exception):
     pass
 
 
-class Logs(six.with_metaclass(Singleton, object)):
+class Logs(with_metaclass(Singleton, object)):
     '''A singleton class that manage all kinds of logger.
 
     Usage::
@@ -222,6 +221,6 @@ class Logs(six.with_metaclass(Singleton, object)):
                     logger.setLevel(level)
             else:
                 self._default_log_level = level
-                for logger in self._loggers.values():
+                for logger in list(self._loggers.values()):
                     logger.setLevel(level)
                 logging.getLogger().setLevel(level)

@@ -177,7 +177,7 @@ class HTTPConnection(_HTTPConnection, object):
             skip_accept_encoding=skip_accept_encoding,
             skip_host=skip_host
         )
-        for header, value in list(headers.items()):
+        for header, value in headers.items():
             self.putheader(header, value)
         if 'transfer-encoding' not in headers:
             self.putheader('Transfer-Encoding', 'chunked')

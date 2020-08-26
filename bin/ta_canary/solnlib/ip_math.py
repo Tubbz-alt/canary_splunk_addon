@@ -17,7 +17,11 @@ This module provides IP manipulate/calculation functionalities.
 '''
 
 import re
-import six
+
+try:
+    long
+except NameError:
+    long = int
 
 
 __all__ = ['ip2long',
@@ -57,7 +61,7 @@ def long2ip(addr):
     :rtype: ``string``
     '''
 
-    if isinstance(addr, six.integer_types):
+    if isinstance(addr, (int, long)):
         ip = long(addr)
         if ip >= 0 and ip < pow(2, 32):
             return '{}.{}.{}.{}'.format((ip >> 24) % 256, (ip >> 16) % 256,

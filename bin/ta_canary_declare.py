@@ -9,6 +9,11 @@ import os
 import sys
 import re
 
+with open('/tmp/debug','w') as f:
+    f.write('This is a testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#############\n')
+    f.write(sys.executable)
+# from pudb.remote import set_trace; set_trace(term_size=(160, 40), host='0.0.0.0', port=6900)
+
 ta_name = 'TA-canary'
 ta_lib_name = 'ta_canary'
 pattern = re.compile(r"[\\/]etc[\\/]apps[\\/][^\\/]+[\\/]bin[\\/]?$")

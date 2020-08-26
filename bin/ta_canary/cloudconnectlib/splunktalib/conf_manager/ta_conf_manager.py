@@ -9,7 +9,6 @@ from . import conf_manager as conf
 from . import request as conf_req
 from .. import credentials as cred
 from ..common import util as utils
-import os
 
 
 class TAConfManager(object):
@@ -146,7 +145,7 @@ class TAConfManager(object):
         if self._keys is None:
             return False
 
-        for k in stanza.keys():
+        for k in stanza.iterkeys():
             if k in self._keys:
                 if stanza.get(k) == self.encrypted_token:
                     return True
@@ -169,7 +168,7 @@ class TAConfManager(object):
         if stanza_to_be_encrypted:
             self._cred_mgr.update({stanza["name"]: stanza_to_be_encrypted})
             encrypted_stanza = copy.deepcopy(stanza)
-            for key in stanza_to_be_encrypted.keys():
+            for key in stanza_to_be_encrypted.iterkeys():
                 encrypted_stanza[key] = self.encrypted_token
             return encrypted_stanza
         return stanza
