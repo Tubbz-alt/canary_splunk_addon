@@ -17,7 +17,8 @@ def collect_events(helper, ew):
     #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
     if not domain.endswith('.canary.tools'):
         domain += '.canary.tools'
-
+    with open('/tmp/debug','w') as f:
+        f.write('New lines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#############\n')
     #Check to see if proxy setting is configured
     proxy = helper.get_proxy()
 
