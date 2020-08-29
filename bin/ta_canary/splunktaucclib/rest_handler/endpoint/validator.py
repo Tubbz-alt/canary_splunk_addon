@@ -269,7 +269,7 @@ class Number(Validator):
         :param is_int: the value should be integer or not
         """
         def check(val):
-            return val is None or isinstance(val, (int, long, float))
+            return val is None or isinstance(val, (six.integer_types, float))
         assert check(min_val) and check(max_val), \
             '%(min_val)s & %(max_val)s should be numbers' % {
                 'min_val': min_val,
@@ -283,7 +283,7 @@ class Number(Validator):
 
     def validate(self, value, data):
         try:
-            value = long(value) if self._is_int else float(value)
+            value = six.integer_types(value) if self._is_int else float(value)
         except ValueError:
             self.put_msg(
                 'Invalid format for %s value' % ('integer' if self._is_int else 'numeric')

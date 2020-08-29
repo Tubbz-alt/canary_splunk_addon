@@ -33,5 +33,5 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(
                 *args, **kwargs)
-            print cls
+            print (cls)
         return cls._instances[cls]

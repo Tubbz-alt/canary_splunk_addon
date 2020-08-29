@@ -1,3 +1,4 @@
+from __future__ import print_function
 # encoding = utf-8
 import importlib
 import copy
@@ -15,6 +16,8 @@ from solnlib import utils as sutils
 from splunktaucclib.global_config import GlobalConfig, GlobalConfigSchema
 from splunk_aoblib.rest_helper import TARestHelper
 from splunk_aoblib.setup_util import Setup_Util
+import six
+from io import open
 
 DATA_INPUTS_OPTIONS = "data_inputs_options"
 AOB_TEST_FLAG = 'AOB_TEST'
@@ -114,7 +117,7 @@ class BaseModInput(smi.Script):
         except Exception as e:
             import traceback
             self.log_error(traceback.format_exc())
-            print >> sys.stderr, traceback.format_exc()
+            print(traceback.format_exc(), file=sys.stderr)
             self.input_stanzas = {}
         if not self.input_stanzas:
             # if no stanza found. Just return
@@ -128,7 +131,7 @@ class BaseModInput(smi.Script):
         except Exception as e:
             import traceback
             self.log_error('Get error when collecting events.\n' + traceback.format_exc())
-            print >> sys.stderr, traceback.format_exc()
+            print(traceback.format_exc(), file=sys.stderr)
             raise RuntimeError(str(e))
 
     def collect_events(self, event_writer):
@@ -185,7 +188,7 @@ class BaseModInput(smi.Script):
                 if stanza.get('disabled', False):
                     raise RuntimeError("Running disabled data input!")
                 stanza_params = {}
-                for k, v in stanza.iteritems():
+                for k, v in stanza.items():
                     if k in checkbox_fields:
                         stanza_params[k] = sutils.is_true(v)
                     elif k in account_fields:
@@ -208,7 +211,7 @@ class BaseModInput(smi.Script):
             kind_and_name = input_stanza.split("://")
             if len(kind_and_name) == 2:
                 stanza_params = {}
-                for arg_name, arg_value in stanza_args.iteritems():
+                for arg_name, arg_value in stanza_args.items():
                     try:
                         arg_value_trans = json.loads(arg_value)
                     except ValueError:
@@ -263,7 +266,7 @@ class BaseModInput(smi.Script):
 
         :param level: log level in `string`. Accept "DEBUG", "INFO", "WARNING", "ERROR" and "CRITICAL".
         """
-        if isinstance(level, basestring):
+        if isinstance(level, six.string_types):
             level = level.lower()
             if level in self.LogLevelMapping:
                 level = self.LogLevelMapping[level]
@@ -404,7 +407,7 @@ class BaseModInput(smi.Script):
         :return: `string` or `list`
         """
         if self.input_stanzas:
-            names = self.input_stanzas.keys()
+            names = list(self.input_stanzas.keys())
             if self.use_single_instance:
                 return names
             else:
@@ -426,12 +429,12 @@ class BaseModInput(smi.Script):
         """
         if input_stanza_name is None:
             args_dict = {k: args[
-                arg_name] for k, args in self.input_stanzas.iteritems() if arg_name in args}
+                arg_name] for k, args in self.input_stanzas.items() if arg_name in args}
             if self.use_single_instance:
                 return args_dict
             else:
                 if len(args_dict) == 1:
-                    return args_dict.values()[0]
+                    return list(args_dict.values())[0]
                 return None
         else:
             return self.input_stanzas.get(input_stanza_name, {}).get(arg_name, None)

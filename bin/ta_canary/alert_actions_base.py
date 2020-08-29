@@ -1,3 +1,4 @@
+from __future__ import print_function
 import csv
 import gzip
 import sys
@@ -196,7 +197,8 @@ class ModularAlertBase(ModularAction):
         status = 0
         if len(argv) < 2 or argv[1] != "--execute":
             msg = 'Error: argv="{}", expected="--execute"'.format(argv)
-            print >> sys.stderr, msg
+            print (msg, file=sys.stderr)
+            # print >> sys.stderr, msg
             sys.exit(1)
 
         # prepare meta first for permission lack error handling: TAB-2455

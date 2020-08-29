@@ -9,6 +9,6 @@ class PipeManager(object):
 
     def write_events(self, events):
         if not self._event_writer:
-            print events
+            print (events)
             return True
         return self._event_writer.write_events(events)
