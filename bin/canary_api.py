@@ -30,13 +30,9 @@ class ModInputcanary_api(modinput_wrapper.base_modinput.BaseModInput):
             use_single_instance = False
         super(ModInputcanary_api, self).__init__("ta_canary", "canary_api", use_single_instance)
         self.global_checkbox_fields = None
-        #pass
-        # with open('/tmp/debug','w') as f:
-        #     f.write('start of end_init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#############\n')
 
     def get_scheme(self):
         """overloaded splunklib modularinput method"""
-        #pass
         scheme = super(ModInputcanary_api, self).get_scheme()
         scheme.title = ("Canary API")
         scheme.description = ("Go to the add-on\'s configuration UI and configure modular inputs under the Inputs menu.")
@@ -55,7 +51,6 @@ class ModInputcanary_api(modinput_wrapper.base_modinput.BaseModInput):
                                          description="For future use.  Not implemented.",
                                          required_on_create=True,
                                          required_on_edit=False))
-        #pass
         return scheme
 
     def get_app_name(self):
@@ -63,26 +58,21 @@ class ModInputcanary_api(modinput_wrapper.base_modinput.BaseModInput):
 
     def validate_input(self, definition):
         """validate the input stanza"""
-        #not-reached
         input_module.validate_input(self, definition)
 
     def collect_events(self, ew):
         """write out the events"""
-        #not
         input_module.collect_events(self, ew)
 
     def get_account_fields(self):
-        #pass
         account_fields = []
         return account_fields
 
     def get_checkbox_fields(self):
-        #pass
         checkbox_fields = []
         return checkbox_fields
 
     def get_global_checkbox_fields(self):
-        #not
         if self.global_checkbox_fields is None:
             checkbox_name_file = os.path.join(bin_dir, 'global_checkbox_param.json')
             try:

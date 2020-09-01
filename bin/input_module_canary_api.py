@@ -17,8 +17,6 @@ def collect_events(helper, ew):
     #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
     if not domain.endswith('.canary.tools'):
         domain += '.canary.tools'
-    with open('/tmp/debug','w') as f:
-        f.write('New lines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#############\n')
     #Check to see if proxy setting is configured
     proxy = helper.get_proxy()
 
@@ -30,10 +28,14 @@ def collect_events(helper, ew):
     #Set a custom useragent header for Splunk API so Canary.tools can measure the use of the product
     #Include the TA-canary version number
     try:
-        version = [ i for i in helper.service.apps.list() if i.name == helper.app][0].content['version']
+        ta_version = [ i for i in helper.service.apps.list() if i.name == helper.app][0].content['version']
     except:
-        version = 'N/A'
-    headers = {'User-Agent': 'Splunk API Call ({})'.format(version),
+        ta_version = 'N/A'
+    try:
+        splunk_version =  helper.service.info['version']
+    except KeyError:
+        splunk_version = 'Unknown_version' # the call above worked correctly on 7.3 -> 8.0.5 so another version is likely
+    headers = {'User-Agent': 'Splunk API Call TA-Canary ({ta_version}) Splunk ({splunk_version}) '.format(ta_version=ta_version, splunk_version=splunk_version),
                'X-Canary-Auth-Token': api_key}
 
     #Pass the domain and the api key to the url.
