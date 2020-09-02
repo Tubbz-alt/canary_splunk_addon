@@ -52,6 +52,8 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 - 1.1.9 Additional checks on returned URLs
 - 1.1.10 Fix typo
 - 1.1.11 Rebuild broken package
+- 1.1.12 Include python3 support for Splunk 8
+- 1.1.13 Rebuild for explicit python3 support
 
 ## Credits
 Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.
