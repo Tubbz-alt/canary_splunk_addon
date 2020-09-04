@@ -4,6 +4,7 @@
 import sys
 import time
 import json
+import six
 
 def validate_input(helper, definition):
     """Implement your own validation logic to validate the input stanza configurations"""
@@ -161,7 +162,7 @@ def collect_events(helper, ew):
                     event = helper.new_event(data_dump, source=helper.get_input_type(), index=helper.get_output_index(),sourcetype="canarytools:incidents")
                     ew.write_event(event)
                     try:
-                        created_timestamp = long(a['description']['created'])
+                        created_timestamp = int(a['description']['created'])
                         if created_timestamp > most_recent_timestamp:
                             most_recent_timestamp = created_timestamp
                     except (KeyError, ValueError) as e:

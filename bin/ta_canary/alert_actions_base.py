@@ -186,12 +186,16 @@ class ModularAlertBase(ModularAction):
             sys.exit(2)
 
     def prepare_meta_for_cam(self):
-        with gzip.open(self.results_file, 'rb') as rf:
-            for num, result in enumerate(csv.DictReader(rf)):
-                result.setdefault('rid', str(num))
-                self.update(result)
-                self.invoke()
-                break
+        try:
+            with gzip.open(self.results_file, 'rb') as rf:
+                for num, result in enumerate(csv.DictReader(rf)):
+                    result.setdefault('rid', str(num))
+                    self.update(result)
+                    self.invoke()
+                    break
+        except Exception as e:
+            msg = "Error: {}."
+            self.log_error(msg.format(e))
 
     def run(self, argv):
         status = 0
