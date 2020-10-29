@@ -7,7 +7,9 @@ import os
 import sys
 
 from alert_actions_base import ModularAlertBase
+from api_key_retrieval import get_api_key
 import modalert_canary_delete_an_incident_helper
+import splunklib.client as client
 
 class AlertActionWorkercanary_delete_an_incident(ModularAlertBase):
 
@@ -20,7 +22,10 @@ class AlertActionWorkercanary_delete_an_incident(ModularAlertBase):
             self.log_error('canary_domain is a mandatory setup parameter, but its value is None.')
             return False
 
-        if not self.get_global_setting("api_key"):
+        splunk_session_key = self.session_key
+        splunkService = client.connect(token=splunk_session_key)
+        api_key = get_api_key(splunkService)
+        if not api_key:
             self.log_error('api_key is a mandatory setup parameter, but its value is None.')
             return False
         return True

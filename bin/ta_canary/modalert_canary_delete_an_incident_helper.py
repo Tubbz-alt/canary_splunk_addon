@@ -20,7 +20,9 @@ def process_event(helper, *args, **kwargs):
     if not canary_domain.endswith('.canary.tools'):
         canary_domain += '.canary.tools'
     helper.log_info("canary_domain={}".format(canary_domain))
-    api_key = helper.get_global_setting("api_key")
+    splunk_session_key = helper.session_key
+    splunkService = client.connect(token=splunk_session_key)
+    api_key = get_api_key(splunkService)
     helper.log_info("api_key={}".format(api_key))
 
     # The following example sends rest requests to some endpoint
@@ -71,23 +73,28 @@ def process_event(helper, *args, **kwargs):
     """
     import json
     import time
+    import splunklib.client as client
+    sys.path.insert(0, '../')
+    from api_key_retrieval import get_api_key
     helper.log_info("Alert action canary_delete_an_incident started.")
-    
+
     domain = helper.get_global_setting('canary_domain')
     #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
     if not domain.endswith('.canary.tools'):
         domain += '.canary.tools'
     helper.log_info("canary_domain={}".format(domain))
-    api_key = helper.get_global_setting("api_key")
-    
+    splunk_session_key = helper.session_key
+    splunkService = client.connect(token=splunk_session_key)
+    api_key = get_api_key(splunkService)
+
     #Check to see if proxy setting is configured
     proxy = helper.get_proxy()
-    
+
     if proxy:
         use_proxy = True
     else:
         use_proxy = False
-    
+
     #Set a custom useragent header for Splunk API so Canary.tools can see the use of the product
     #Include the TA-canary version number
     try:
@@ -96,46 +103,46 @@ def process_event(helper, *args, **kwargs):
         version = 'N/A'
     headers = {'User-Agent': 'Splunk API Call ({})'.format(version),
                'X-Canary-Auth-Token': api_key}
-    
+
     #Get ID of Incident
     incident_id = helper.get_param("incident_id")
-    
+
     #Get Index Name
     index_name = helper.get_param("index_name")
-    
-    #Get current time for testing purposes.    
+
+    #Get current time for testing purposes.
     current_time = time.time()
-    
+
     #Pass the domain and the api key to the url.
     url = "https://{}/api/v1/incident/delete?incident={}".format(domain,incident_id)
-    
+
     #Set the method of Get to the console
     method = "DELETE"
-    
-    
-    
+
+
+
     #Try the first connection to see if it works.
     response = helper.send_http_request(url, method, parameters=None,payload=canary_data, headers=headers, cookies=None, verify=True, cert=None, timeout=None, use_proxy=use_proxy)
-    
+
     try:
-        response    
+        response
     except Exception as e:
         helper.log_error("Error occured with canary.tools Acknowledging an incident. Error Message: {}".format(e))
         sys.exit()
-    
+
     if response.status_code == 200:
         #Successfull Connection
         helper.log_info("Successfully deleted incident")
-        
+
         data = response.json()
         data['api_call'] = 'Incident Acknowledged'
         data['_time'] = current_time
         json_data = json.dumps(data)
-        
+
         helper.addevent(json_data, sourcetype="canarytools:ar")
-        
+
         helper.writeevents(source="canary_toolsapi", index=index_name, host="adaptive_response")
-        
+
     else:
         data = response.json()
         data['api_call'] = 'Incident Deleted'
@@ -143,7 +150,7 @@ def process_event(helper, *args, **kwargs):
         json_data = json.dumps(data)
         helper.addevent(json_data, sourcetype="canarytools:ar")
         helper.writeevents(source="canary_toolsapi", index=index_name, host="adaptive_response")
-        helper.log_error("Error with deleting incident.")    
+        helper.log_error("Error with deleting incident.")
 
     # TODO: Implement your alert action logic here
     return 0
