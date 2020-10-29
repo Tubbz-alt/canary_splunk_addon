@@ -1,6 +1,7 @@
 
 # encoding = utf-8
 
+
 def process_event(helper, *args, **kwargs):
     """
     # IMPORTANT
@@ -17,7 +18,9 @@ def process_event(helper, *args, **kwargs):
     if not canary_domain.endswith('.canary.tools'):
         canary_domain += '.canary.tools'
     helper.log_info("canary_domain={}".format(canary_domain))
-    api_key = helper.get_global_setting("api_key")
+    splunk_session_key = helper.session_key
+    splunkService = client.connect(token=splunk_session_key)
+    api_key = get_api_key(splunkService)
     helper.log_info("api_key={}".format(api_key))
 
     # The following example sends rest requests to some endpoint
@@ -71,6 +74,10 @@ def process_event(helper, *args, **kwargs):
     """
     import json
     import time
+    import splunklib.client as client
+    import sys
+    sys.path.insert(0, '../')
+    from api_key_retrieval import get_api_key
     helper.log_info("Alert action canary_acknowledge_incident started.")
 
     domain = helper.get_global_setting('canary_domain')
@@ -78,7 +85,9 @@ def process_event(helper, *args, **kwargs):
     if not domain.endswith('.canary.tools'):
         domain += '.canary.tools'
     helper.log_info("canary_domain={}".format(domain))
-    api_key = helper.get_global_setting("api_key")
+    splunk_session_key = helper.session_key
+    splunkService = client.connect(token=splunk_session_key)
+    api_key = get_api_key(splunkService)
 
     #Check to see if proxy setting is configured
     proxy = helper.get_proxy()

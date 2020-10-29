@@ -56,6 +56,7 @@ This Add-On requires access to the Canary Tools API and for the API to be enable
 - 1.1.13 Rebuild for explicit python3 support
 - 1.1.14 Fix bug in closing incidents
 - 1.1.15 Fix issues for being added to Splunk Cloud
+- 1.1.16 Fix api_key encryption
 
 ## Credits
 Written by Mickey Perre, maintained by Thinkst. Kindly file issues with the app here in Github.

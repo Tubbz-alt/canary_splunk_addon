@@ -44,22 +44,22 @@ define(
                 var sanitized_api_key = this.sanitize_string(api_key);
                 var api_key = sanitized_api_key;
 
-                // var error_messages_to_display = this.validate_inputs(
-                //     canary_domain,
-                //     api_key,
-                // );
+                var error_messages_to_display = this.validate_inputs(
+                    canary_domain,
+                    api_key,
+                );
 
-                // // var did_error_messages_occur = error_messages_to_display.length > 0;
-                // // if (did_error_messages_occur) {
-                // //     // Displays the errors that occurred input validation
-                // //     this.display_error_output(error_messages_to_display);
-                // // } else {
+                var did_error_messages_occur = error_messages_to_display.length > 0;
+                if (did_error_messages_occur) {
+                    // Displays the errors that occurred input validation
+                    this.display_error_output(error_messages_to_display);
+                } else {
                 this.perform_setup(
                     splunk_js_sdk,
                     canary_domain,
                     api_key,
                 );
-                // }
+                }
             },
 
             // This is where the main setup process occurs
@@ -83,13 +83,13 @@ define(
                     await this.create_custom_configuration_file(
                         splunk_js_sdk_service,
                         canary_domain,
-                        api_key,
+                        // api_key,
 
                     );
 
                     // Creates the passwords.conf stanza that is the encryption
                     // of the api_key provided by the user
-                    // await this.encrypt_api_key(splunk_js_sdk_service, api_key);
+                    await this.encrypt_api_key(splunk_js_sdk_service, api_key);
 
                     // Completes the setup, by access the app.conf's [install]
                     // stanza and then setting the `is_configured` to true
@@ -146,43 +146,43 @@ define(
                 );
             },
 
-            // encrypt_api_key: async function encrypt_api_key(
-            //     splunk_js_sdk_service,
-            //     api_key,
-            // ) {
-            //     // /servicesNS/<NAMESPACE_USERNAME>/<SPLUNK_APP_NAME>/storage/passwords/<REALM>%3A<USERNAME>%3A
-            //     var realm = "ta_canary_settings_realm";
-            //     var username = "admin";
+            encrypt_api_key: async function encrypt_api_key(
+                splunk_js_sdk_service,
+                api_key,
+            ) {
+                // /servicesNS/<NAMESPACE_USERNAME>/<SPLUNK_APP_NAME>/storage/passwords/<REALM>%3A<USERNAME>%3A
+                var realm = "ta_canary_settings_realm";
+                var username = "admin";
 
-            //     var storage_passwords_accessor = splunk_js_sdk_service.storagePasswords(
-            //         {
-            //             // No namespace information provided
-            //         },
-            //     );
-            //     await storage_passwords_accessor.fetch();
+                var storage_passwords_accessor = splunk_js_sdk_service.storagePasswords(
+                    {
+                        // No namespace information provided
+                    },
+                );
+                await storage_passwords_accessor.fetch();
 
-            //     var does_storage_password_exist = this.does_storage_password_exist(
-            //         storage_passwords_accessor,
-            //         realm,
-            //         username,
-            //     );
+                var does_storage_password_exist = this.does_storage_password_exist(
+                    storage_passwords_accessor,
+                    realm,
+                    username,
+                );
 
-            //     if (does_storage_password_exist) {
-            //         await this.delete_storage_password(
-            //             storage_passwords_accessor,
-            //             realm,
-            //             username,
-            //         );
-            //     }
-            //     await storage_passwords_accessor.fetch();
+                if (does_storage_password_exist) {
+                    await this.delete_storage_password(
+                        storage_passwords_accessor,
+                        realm,
+                        username,
+                    );
+                }
+                await storage_passwords_accessor.fetch();
 
-            //     await this.create_storage_password_stanza(
-            //         storage_passwords_accessor,
-            //         realm,
-            //         username,
-            //         api_key,
-            //     );
-            // },
+                await this.create_storage_password_stanza(
+                    storage_passwords_accessor,
+                    realm,
+                    username,
+                    api_key,
+                );
+            },
 
             complete_setup: async function complete_setup(splunk_js_sdk_service) {
                 var app_name = "TA-canary";
@@ -338,23 +338,23 @@ define(
                 return was_property_found;
             },
 
-            // does_storage_password_exist: function does_storage_password_exist(
-            //     storage_passwords_accessor,
-            //     realm_name,
-            //     username,
-            // ) {
-            //     storage_passwords = storage_passwords_accessor.list();
-            //     storage_passwords_found = [];
+            does_storage_password_exist: function does_storage_password_exist(
+                storage_passwords_accessor,
+                realm_name,
+                username,
+            ) {
+                storage_passwords = storage_passwords_accessor.list();
+                storage_passwords_found = [];
 
-            //     for (var index = 0; index < storage_passwords.length; index++) {
-            //         storage_password = storage_passwords[index];
-            //         storage_password_stanza_name = storage_password.name;
-            //         storage_passwords_found.push(storage_password);
-            //     }
-            //     var does_storage_password_exist = storage_passwords_found.length > 0;
+                for (var index = 0; index < storage_passwords.length; index++) {
+                    storage_password = storage_passwords[index];
+                    storage_password_stanza_name = storage_password.name;
+                    storage_passwords_found.push(storage_password);
+                }
+                var does_storage_password_exist = storage_passwords_found.length > 0;
 
-            //     return does_storage_password_exist;
-            // },
+                return does_storage_password_exist;
+            },
 
             // ---------------------
             // Retrieval Functions
@@ -453,36 +453,36 @@ define(
                 );
             },
 
-            // create_storage_password_stanza: function create_storage_password_stanza(
-            //     splunk_js_sdk_service_storage_passwords,
-            //     realm,
-            //     username,
-            //     value_to_encrypt,
-            // ) {
-            //     var parent_context = this;
+            create_storage_password_stanza: function create_storage_password_stanza(
+                splunk_js_sdk_service_storage_passwords,
+                realm,
+                username,
+                value_to_encrypt,
+            ) {
+                var parent_context = this;
 
-            //     return splunk_js_sdk_service_storage_passwords.create(
-            //         {
-            //             name: username,
-            //             password: value_to_encrypt,
-            //             realm: realm,
-            //         },
-            //         function(error_response, response) {
-            //             // Do nothing
-            //         },
-            //     );
-            // },
+                return splunk_js_sdk_service_storage_passwords.create(
+                    {
+                        name: username,
+                        password: value_to_encrypt,
+                        realm: realm,
+                    },
+                    function(error_response, response) {
+                        // Do nothing
+                    },
+                );
+            },
 
             // ----------------------------------
             // Deletion Methods
             // ----------------------------------
-            // delete_storage_password: function delete_storage_password(
-            //     storage_passwords_accessor,
-            //     realm,
-            //     username,
-            // ) {
-            //     return storage_passwords_accessor.del(realm + ":" + username + ":");
-            // },
+            delete_storage_password: function delete_storage_password(
+                storage_passwords_accessor,
+                realm,
+                username,
+            ) {
+                return storage_passwords_accessor.del(realm + ":" + username + ":");
+            },
 
             // ----------------------------------
             // Input Cleaning and Checking

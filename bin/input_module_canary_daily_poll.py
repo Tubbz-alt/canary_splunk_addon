@@ -5,6 +5,7 @@ import sys
 import time
 import json
 import six
+from api_key_retrieval import get_api_key
 
 def validate_input(helper, definition):
     """Implement your own validation logic to validate the input stanza configurations"""
@@ -16,8 +17,8 @@ def collect_events(helper, ew):
     #Admin can use XXXXXXX.canary.tools or simply XXXXXXX
     if not domain.endswith('.canary.tools'):
         domain += '.canary.tools'
-
-    api_key = helper.get_global_setting("api_key")
+    api_key = get_api_key(helper.service)
+    # api_key = helper.get_global_setting("api_key")
     incident_limit = 20
 
     #Check to see if proxy setting is configured
